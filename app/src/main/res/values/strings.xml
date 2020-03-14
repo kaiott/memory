@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">memory</string>
+    <string name="new_game_button_text">New Game</string>
+    <string name="continue_game_button_text">Continue Game</string>
+    <string name="settings_button_text">Settings</string>
+    <string name="statistics_button_text">Statistics</string>
+    <string name="help_button_text">Help</string>
+    <string name="credits_button_text">Credits</string>
+    <string name="exit_game_button_text">Exit Game</string>
 </resources>

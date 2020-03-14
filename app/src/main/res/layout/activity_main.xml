@@ -6,13 +6,81 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/button_new_game"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="@dimen/button_separation_top"
+        android:onClick="newGameClicked"
+        android:text="@string/new_game_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_continue_game"
+        app:layout_constraintStart_toStartOf="@+id/button_continue_game"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/button_continue_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_separation_main"
+        android:onClick="continueGameClicked"
+        android:text="@string/continue_game_button_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_new_game" />
+
+    <Button
+        android:id="@+id/button_settings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_separation_main"
+        android:onClick="settingsClicked"
+        android:text="@string/settings_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_help"
+        app:layout_constraintStart_toStartOf="@+id/button_help"
+        app:layout_constraintTop_toBottomOf="@+id/button_help" />
+
+    <Button
+        android:id="@+id/button_statistics"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_separation_main"
+        android:onClick="statisticsClicked"
+        android:text="@string/statistics_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_continue_game"
+        app:layout_constraintHorizontal_bias="0.605"
+        app:layout_constraintStart_toStartOf="@+id/button_continue_game"
+        app:layout_constraintTop_toBottomOf="@+id/button_continue_game" />
+
+    <Button
+        android:id="@+id/button_help"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_separation_main"
+        android:onClick="helpClicked"
+        android:text="@string/help_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_statistics"
+        app:layout_constraintStart_toStartOf="@+id/button_statistics"
+        app:layout_constraintTop_toBottomOf="@+id/button_statistics" />
+
+    <Button
+        android:id="@+id/button_credits"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_separation_main"
+        android:onClick="creditsClicked"
+        android:text="@string/credits_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_settings"
+        app:layout_constraintStart_toStartOf="@+id/button_settings"
+        app:layout_constraintTop_toBottomOf="@+id/button_settings" />
+
+    <Button
+        android:id="@+id/button_exit_game"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_separation_main"
+        android:onClick="exitGameClicked"
+        android:text="@string/exit_game_button_text"
+        app:layout_constraintEnd_toEndOf="@+id/button_credits"
+        app:layout_constraintStart_toStartOf="@+id/button_credits"
+        app:layout_constraintTop_toBottomOf="@+id/button_credits" />
 </androidx.constraintlayout.widget.ConstraintLayout>
