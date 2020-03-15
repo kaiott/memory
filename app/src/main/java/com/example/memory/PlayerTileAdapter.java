@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.EventViewHolder> {
 
@@ -23,6 +24,11 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
     public PlayerTileAdapter(Context ct, ArrayList<ConfigureGameActivity.Player> players) {
         context = ct;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).color == -1) {
+                players.get(i).color = colors[i];
+            }
+        }
         this.players = players;
     }
 
@@ -37,12 +43,21 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, final int position) {
         holder.playerImage.setImageResource(R.drawable.ic_person_black_24dp);
-        holder.colorView.setBackgroundColor(colors[position]);
+        holder.colorView.setBackgroundColor(players.get(position).color);
         if (position != 0) {
             holder.deleteImage.setImageResource(R.drawable.ic_close_red_48dp);
             holder.deleteImage.setVisibility(View.VISIBLE);
         }
         else holder.deleteImage.setVisibility(View.INVISIBLE);
+        holder.deleteImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (context instanceof ConfigureGameActivity) {
+                    ((ConfigureGameActivity) context).deletePlayerClicked(position);
+                }
+            }
+        });
+        holder.playerText.setText(String.format(Locale.ENGLISH, "Player %d", position+1));
 
         /*final Event e = Event.allEvents.get(ids[position]);
         holder.titleText.setText(e.getTitle());
@@ -78,7 +93,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
     public class EventViewHolder extends RecyclerView.ViewHolder{
 
-        TextView colorView, locationText;
+        TextView colorView, playerText;
         ImageView playerImage, deleteImage;
         ConstraintLayout constraintLayout;
 
@@ -87,6 +102,8 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
             playerImage = itemView.findViewById(R.id.player_image);
             colorView = itemView.findViewById(R.id.colorView);
             deleteImage = itemView.findViewById(R.id.deleteView);
+            playerText = itemView.findViewById(R.id.player_text_view);
+
             /*titleText = itemView.findViewById(R.id.titleText_places);
             timeText = itemView.findViewById(R.id.timeText);
             locationText = itemView.findViewById(R.id.locationText_places);
