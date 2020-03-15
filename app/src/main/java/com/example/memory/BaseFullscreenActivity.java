@@ -6,7 +6,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.WindowManager;
 
-public abstract class BaseFullscreenActivity extends Activity {
+public abstract class BaseFullscreenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

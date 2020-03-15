@@ -1,20 +1,31 @@
 package com.example.memory;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,24 +34,38 @@ import java.util.Locale;
 
 public class GameActivity extends BaseFullscreenActivity {
 
-    ArrayList<ImageView> cards;
-    Guideline [] verticalGuides = new Guideline[5];
     private final static String TAG = "GameActivity";
     public final static int COVERED = 0, TURNED = 1;
-    int n = 6;
-    int m = 6;
-    int numTries;
-    int oldPosition;
+
+    Guideline [] verticalGuides = new Guideline[5];
+    TextView playerBody, pointsBody, playerOverview;
+
+    ArrayList<ImageView> cards;
+    ArrayList<Player> players;
     ArrayList<Integer> objectA;
-    int [] catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
-    int [] status;
+
+    int n, m, numTries, oldPosition, turnPlayer;
+    int [] status, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
+    boolean randomOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        getAndSetData();
         initializeMembers();
+    }
 
+    protected void getAndSetData() {
+        Serializable s = null;
+        if(getIntent().hasExtra("players")) {
+            Log.i(TAG, "getAndSetData: there is an extra player");
+            s = getIntent().getSerializableExtra("players");
+            players = (ArrayList<Player>) s;
+        }
+        n = 6;
+        m = 6;
+        randomOrder = false;
     }
 
     public void cardSelected(int position) {
@@ -58,11 +83,10 @@ public class GameActivity extends BaseFullscreenActivity {
             oldPosition = position;
         }
         if (numTries == 2) {
-            new EndTurnTask().execute(oldPosition, position);
-
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
                 addPoints();
             }
+            new EndTurnTask().execute(oldPosition, position);
         }
     }
 
@@ -72,11 +96,10 @@ public class GameActivity extends BaseFullscreenActivity {
             pos1 = args[0];
             pos2 = args[1];
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             return true;
         }
 
@@ -84,24 +107,48 @@ public class GameActivity extends BaseFullscreenActivity {
             if (objectA.get(pos1).equals(objectA.get(pos2))) {
                 cards.get(pos1).setVisibility(View.INVISIBLE);
                 cards.get(pos2).setVisibility(View.INVISIBLE);
+                nextTurn();
             }
             else {
                 status[pos1] = COVERED;
                 status[pos2] = COVERED;
                 cards.get(pos1).setImageResource(R.drawable.card_back);
                 cards.get(pos2).setImageResource(R.drawable.card_back);
+                nextPlayer();
             }
-            nextPlayer();
         }
     }
 
     private void addPoints() {
+        players.get(turnPlayer).addPoint();
+        pointsBody.setText(""+players.get(turnPlayer).getPoints());
+        updateOverview();
+    }
 
+    private void nextTurn() {
+        numTries = 0;
+        oldPosition = -1;
     }
 
     private void nextPlayer() {
-        numTries = 0;
-        oldPosition = -1;
+        turnPlayer++;
+        turnPlayer %= players.size();
+        playerBody.setText("Player " + turnPlayer);
+        playerBody.setTextColor(players.get(turnPlayer).getColor());
+        pointsBody.setText(""+players.get(turnPlayer).getPoints());
+        pointsBody.setTextColor(players.get(turnPlayer).getColor());
+        updateOverview();
+        nextTurn();
+    }
+
+    protected void updateOverview() {
+        SpannableString overview = new SpannableString("");
+        for (Player player : players) {
+            SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "Player %d:  %d\n", player.getNumber(), player.getPoints()));
+            s.setSpan(new ForegroundColorSpan(player.getColor()), 0, s.length(), 0);
+            overview = new SpannableString(TextUtils.concat(overview, s));
+        }
+        playerOverview.setText(overview, TextView.BufferType.SPANNABLE);
     }
 
 
@@ -137,9 +184,8 @@ public class GameActivity extends BaseFullscreenActivity {
 
     protected void initializeMembers() {
         status = new int[n*m];
-        numTries = 0;
-        oldPosition = -1;
         cards = new ArrayList<>();
+        turnPlayer = -1;
         cards.add((ImageView) findViewById(R.id.card0));
         cards.add((ImageView) findViewById(R.id.card1));
         cards.add((ImageView) findViewById(R.id.card2));
@@ -191,6 +237,9 @@ public class GameActivity extends BaseFullscreenActivity {
                 }
             });
         }
+
+        makeGrid(n);
+
         objectA = new ArrayList<>(36);
         for (int i = 0; i < 9; i ++) {
             objectA.add(i);
@@ -199,5 +248,52 @@ public class GameActivity extends BaseFullscreenActivity {
             objectA.add(i);
         }
         Collections.shuffle(objectA);
+
+        playerBody = findViewById(R.id.player_body);
+        pointsBody = findViewById(R.id.points_body);
+        playerOverview = findViewById(R.id.player_overview);
+
+        updateOverview();
+        nextPlayer();
     }
+
+    @Override
+    public void onBackPressed() {
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+        mBuilder.setTitle("Return Home?")
+                .setMessage("Do you really want to leave? You can continue this game later in the Home screen with \'continue game\' ")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setPositiveButton("Leave", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        mBuilder.create();
+        mBuilder.show();
+    }
+
+    private void saveGameState() {
+
+    }
+
+    public static class GameState implements Serializable {
+        private ArrayList<Player> players;
+        private ArrayList<Integer> objectA;
+        private int n, m, turnPlayer;
+        private int [] status;
+        boolean randomOrder;
+
+
+    }
+
 }

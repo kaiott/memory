@@ -19,14 +19,14 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
     private int numPlayers;
     private int[] colors = {Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA};
-    ArrayList<ConfigureGameActivity.Player> players;
+    ArrayList<Player> players;
     private Context context;
 
-    public PlayerTileAdapter(Context ct, ArrayList<ConfigureGameActivity.Player> players) {
+    public PlayerTileAdapter(Context ct, ArrayList<Player> players) {
         context = ct;
         for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).color == -1) {
-                players.get(i).color = colors[i];
+            if (players.get(i).getColor() == -1) {
+                players.get(i).setColor(colors[i]);
             }
         }
         this.players = players;
@@ -42,8 +42,9 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, final int position) {
+        players.get(position).setNumber(position);
         holder.playerImage.setImageResource(R.drawable.ic_person_black_24dp);
-        holder.colorView.setBackgroundColor(players.get(position).color);
+        holder.colorView.setBackgroundColor(players.get(position).getColor());
         if (position != 0) {
             holder.deleteImage.setImageResource(R.drawable.ic_close_red_48dp);
             holder.deleteImage.setVisibility(View.VISIBLE);
@@ -103,13 +104,6 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
             colorView = itemView.findViewById(R.id.colorView);
             deleteImage = itemView.findViewById(R.id.deleteView);
             playerText = itemView.findViewById(R.id.player_text_view);
-
-            /*titleText = itemView.findViewById(R.id.titleText_places);
-            timeText = itemView.findViewById(R.id.timeText);
-            locationText = itemView.findViewById(R.id.locationText_places);
-            logoView = itemView.findViewById(R.id.logoImage);
-            favView = itemView.findViewById(R.id.favView);
-            constraintLayout = itemView.findViewById(R.id.mainLayout)*/;
         }
     }
 }

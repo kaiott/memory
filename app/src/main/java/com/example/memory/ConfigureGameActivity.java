@@ -1,16 +1,13 @@
 package com.example.memory;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -63,7 +60,7 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
 
     public void playClicked(View view) {
         Intent intent = new Intent(view.getContext(), GameActivity.class);
-        //intent.putExtra("players", players);
+        intent.putExtra("players", players);
         startActivity(intent);
     }
 
@@ -72,20 +69,5 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
     }
 
 
-    public static class Player {
-        public static final int TYPE_HUMAN = 0, TYPE_COMP_BEGINNER = 1, TYPE_COMP_MEDIUM = 2, TYPE_COMP_GOD = 3;
-        int color;
-        int type;
-        public Player() {
 
-        }
-        public Player(int type) {
-            this.color = -1;
-            this.type = type;
-        }
-        public Player(int color, int type) {
-            this.color = color;
-            this.type = type;
-        }
-    }
 }
