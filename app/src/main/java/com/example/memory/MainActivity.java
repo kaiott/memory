@@ -1,40 +1,49 @@
 package com.example.memory;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MainActivity extends BaseFullscreenActivity {
 
     private static final String TAG = "MainActivity";
+    private String previous_state;
+    private Button buttonContinueGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        buttonContinueGame = findViewById(R.id.button_continue_game);
+        SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
+        previous_state = preferences.getString("state", null);
+        if (previous_state == null) {
+            buttonContinueGame.setEnabled(false);
+            buttonContinueGame.setAlpha(0.6f);
+        }
     }
 
 
-
-
-
-    public void newGameClicked(android.view.View view) {
+    public void newGameClicked(View view) {
         Log.i(TAG, "newGameClicked: newGameClicked");
         Intent intent = new Intent(view.getContext(), ConfigureGameActivity.class);
         startActivity(intent);
     }
 
-    public void continueGameClicked(android.view.View view) {
-        Toast.makeText(this,"Continue Game clicked", Toast.LENGTH_SHORT).show();
+    public void continueGameClicked(View view) {
+        Log.i(TAG, "continueGameClicked: ");
+        SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
+        previous_state = preferences.getString("state", null);
+        Intent intent = new Intent(view.getContext(), GameActivity.class);
+        intent.putExtra("previous_state", previous_state);
+        startActivity(intent);
     }
 
-    public void statisticsClicked(android.view.View view) {
+    public void statisticsClicked(View view) {
         Toast.makeText(this,"Statistics clicked", Toast.LENGTH_SHORT).show();
     }
 

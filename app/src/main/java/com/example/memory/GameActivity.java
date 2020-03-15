@@ -1,33 +1,29 @@
 package com.example.memory;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.Guideline;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -35,7 +31,7 @@ import java.util.Locale;
 public class GameActivity extends BaseFullscreenActivity {
 
     private final static String TAG = "GameActivity";
-    public final static int COVERED = 0, TURNED = 1;
+    public final static int COVERED = 0, TURNED = 1, TAKEN = 2;
 
     Guideline [] verticalGuides = new Guideline[5];
     TextView playerBody, pointsBody, playerOverview;
@@ -44,7 +40,7 @@ public class GameActivity extends BaseFullscreenActivity {
     ArrayList<Player> players;
     ArrayList<Integer> objectA;
 
-    int n, m, numTries, oldPosition, turnPlayer;
+    int n, m, numTries, oldPosition, turnPlayer, cardsLeft;
     int [] status, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
     boolean randomOrder;
 
@@ -57,15 +53,42 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     protected void getAndSetData() {
-        Serializable s = null;
         if(getIntent().hasExtra("players")) {
             Log.i(TAG, "getAndSetData: there is an extra player");
-            s = getIntent().getSerializableExtra("players");
+            Serializable s = getIntent().getSerializableExtra("players");
             players = (ArrayList<Player>) s;
+            n = 6;
+            m = 6;
+            cardsLeft = n*m;
+            randomOrder = false;
+            objectA = new ArrayList<>(36);
+            status = new int[n*m];
+            turnPlayer = -1;
+            for (int i = 0; i < 9; i ++) {
+                objectA.add(i);
+                objectA.add(i);
+                objectA.add(i);
+                objectA.add(i);
+            }
+            Collections.shuffle(objectA);
         }
-        n = 6;
-        m = 6;
-        randomOrder = false;
+        else if (getIntent().hasExtra("previous_state")) {
+            Log.i(TAG, "getAndSetData: trying to restore game");
+            String previousState = getIntent().getStringExtra("previous_state");
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Type type = new TypeToken<GameState>() {}.getType();
+            GameState state = gson.fromJson(previousState, type);
+            assert state != null;
+            Log.i(TAG, "getAndSetData: conversion correct");
+            this.n = state.n;
+            this.m = state.m;
+            this.cardsLeft = state.cardsLeft;
+            this.randomOrder = state.randomOrder;
+            this.objectA = state.objectA;
+            this.players = state.players;
+            this.turnPlayer = state.turnPlayer-1; // -1 because in initialize we call nextPlayer() which increments the turn
+            this.status = state.status;
+        }
     }
 
     public void cardSelected(int position) {
@@ -85,6 +108,13 @@ public class GameActivity extends BaseFullscreenActivity {
         if (numTries == 2) {
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
                 addPoints();
+                cardsLeft -= 2;
+                status[oldPosition] = TAKEN;
+                status[position] = TAKEN;
+            }
+            else {
+                status[oldPosition] = COVERED;
+                status[position] = COVERED;
             }
             new EndTurnTask().execute(oldPosition, position);
         }
@@ -131,6 +161,10 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void nextPlayer() {
+        if (cardsLeft == 0) {
+            endGame();
+            return;
+        }
         turnPlayer++;
         turnPlayer %= players.size();
         playerBody.setText("Player " + turnPlayer);
@@ -139,6 +173,10 @@ public class GameActivity extends BaseFullscreenActivity {
         pointsBody.setTextColor(players.get(turnPlayer).getColor());
         updateOverview();
         nextTurn();
+    }
+
+    private void endGame() {
+        getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
     }
 
     protected void updateOverview() {
@@ -162,30 +200,18 @@ public class GameActivity extends BaseFullscreenActivity {
 
     public void makeGrid(int n) {
         Log.i(TAG, "makeGrid: setting grid to n =" +n);
-        if (n==5) {
-            for (int i = 0; i< verticalGuides.length; i++) {
-                verticalGuides[i].setGuidelinePercent((i + 1f )/n);
-            }
-            for(int i = 0; i < 6; i++) {
-                cards.get(5 + 6*i).setVisibility(View.INVISIBLE);
-                cards.get(30 + i).setVisibility(View.INVISIBLE);
-            }
+        for (int i = 0; i< verticalGuides.length; i++) {
+            verticalGuides[i].setGuidelinePercent((i + 1f )/n);
         }
-        else if (n==6) {
-            for (int i = 0; i< verticalGuides.length; i++) {
-                verticalGuides[i].setGuidelinePercent((i + 1f )/n);
-            }
-            for(int i = 0; i < 6; i++) {
-                cards.get(5 + 6*i).setVisibility(View.VISIBLE);
-                cards.get(30 + i).setVisibility(View.VISIBLE);
+        for (int pos = 0; pos < n*m; pos++) {
+            if(status[pos] == TAKEN || this.row(pos) >= n  || this.col(pos) >= n ) {
+                cards.get(pos).setVisibility(View.INVISIBLE);
             }
         }
     }
 
     protected void initializeMembers() {
-        status = new int[n*m];
         cards = new ArrayList<>();
-        turnPlayer = -1;
         cards.add((ImageView) findViewById(R.id.card0));
         cards.add((ImageView) findViewById(R.id.card1));
         cards.add((ImageView) findViewById(R.id.card2));
@@ -240,15 +266,6 @@ public class GameActivity extends BaseFullscreenActivity {
 
         makeGrid(n);
 
-        objectA = new ArrayList<>(36);
-        for (int i = 0; i < 9; i ++) {
-            objectA.add(i);
-            objectA.add(i);
-            objectA.add(i);
-            objectA.add(i);
-        }
-        Collections.shuffle(objectA);
-
         playerBody = findViewById(R.id.player_body);
         pointsBody = findViewById(R.id.points_body);
         playerOverview = findViewById(R.id.player_overview);
@@ -271,7 +288,7 @@ public class GameActivity extends BaseFullscreenActivity {
                 .setPositiveButton("Leave", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        saveGameState();
                         Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
@@ -283,17 +300,29 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void saveGameState() {
-
+        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, status, randomOrder);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
+        preferences.edit().putString("state", gson.toJson(state)).apply();
     }
 
     public static class GameState implements Serializable {
-        private ArrayList<Player> players;
-        private ArrayList<Integer> objectA;
-        private int n, m, turnPlayer;
-        private int [] status;
+        ArrayList<Player> players;
+        ArrayList<Integer> objectA;
+        int n, m, turnPlayer, cardsLeft;
+        int [] status;
         boolean randomOrder;
 
-
+        public GameState(ArrayList<Player> players, ArrayList<Integer> objectA, int n, int m, int turnPlayer, int cardsLeft, int[] status, boolean randomOrder) {
+            this.players = players;
+            this.objectA = objectA;
+            this.n = n;
+            this.m = m;
+            this.turnPlayer = turnPlayer;
+            this.cardsLeft = cardsLeft;
+            this.status = status;
+            this.randomOrder = randomOrder;
+        }
     }
 
 }
