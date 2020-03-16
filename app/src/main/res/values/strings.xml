@@ -7,4 +7,9 @@
     <string name="help_button_text">Help</string>
     <string name="credits_button_text">Credits</string>
     <string name="exit_game_button_text">Exit Game</string>
+    <string name="player">Player</string>
+    <string name="return_home_title">Return Home?</string>
+    <string name="return_home_body">\"Do you really want to leave? You can continue this game later in the Home screen with \'continue game\' \"</string>
+    <string name="return_home_cancel">Cancel</string>
+    <string name="return_home_leave">Leave</string>
 </resources>

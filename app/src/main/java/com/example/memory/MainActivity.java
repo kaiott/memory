@@ -8,6 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+
 public class MainActivity extends BaseFullscreenActivity {
 
     private static final String TAG = "MainActivity";
@@ -36,10 +42,12 @@ public class MainActivity extends BaseFullscreenActivity {
 
     public void continueGameClicked(View view) {
         Log.i(TAG, "continueGameClicked: ");
-        SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
-        previous_state = preferences.getString("state", null);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Type type = new TypeToken<GameState>() {}.getType();
+        GameState state = gson.fromJson(previous_state, type);
+        assert state != null;
         Intent intent = new Intent(view.getContext(), GameActivity.class);
-        intent.putExtra("previous_state", previous_state);
+        intent.putExtra("state", state);
         startActivity(intent);
     }
 

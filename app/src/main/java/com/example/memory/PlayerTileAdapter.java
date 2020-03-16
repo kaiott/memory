@@ -17,7 +17,6 @@ import java.util.Locale;
 
 public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.EventViewHolder> {
 
-    private int numPlayers;
     private int[] colors = {Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA};
     ArrayList<Player> players;
     private Context context;
@@ -58,33 +57,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
                 }
             }
         });
-        holder.playerText.setText(String.format(Locale.ENGLISH, "Player %d", position+1));
-
-        /*final Event e = Event.allEvents.get(ids[position]);
-        holder.titleText.setText(e.getTitle());
-        holder.timeText.setText(Event.dayToString(e.getStartDate(), Event.NAME_AND_DAY_AND_TIME));
-        holder.locationText.setText(e.getLocation());
-        holder.logoView.setImageResource(Event.imagesrc[e.getCompanyID()]);
-        if (e.isFavourite()) {
-            holder.favView.setVisibility(View.VISIBLE);
-        }
-        else {
-            holder.favView.setVisibility(View.GONE);
-        }
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (e.getId() != 7) {
-                    Intent intent = new Intent(context, EventDetailsActivity.class);
-                    intent.putExtra("event_id", e.getId());
-                    context.startActivity(intent);
-                } else {
-                    Intent intent = new Intent(context, TicTacToeActivity.class);
-                    intent.putExtra("event_id", e.getId());
-                    context.startActivity(intent);
-                }
-            }
-        });*/
+        holder.playerText.setText(String.format(Locale.ENGLISH, "%s %d", context.getString(R.string.player), position+1));
     }
 
     @Override

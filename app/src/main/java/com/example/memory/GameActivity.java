@@ -24,6 +24,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -53,31 +54,10 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     protected void getAndSetData() {
-        if(getIntent().hasExtra("players")) {
-            Log.i(TAG, "getAndSetData: there is an extra player");
-            Serializable s = getIntent().getSerializableExtra("players");
-            players = (ArrayList<Player>) s;
-            n = 6;
-            m = 6;
-            cardsLeft = n*m;
-            randomOrder = false;
-            objectA = new ArrayList<>(36);
-            status = new int[n*m];
-            turnPlayer = -1;
-            for (int i = 0; i < 9; i ++) {
-                objectA.add(i);
-                objectA.add(i);
-                objectA.add(i);
-                objectA.add(i);
-            }
-            Collections.shuffle(objectA);
-        }
-        else if (getIntent().hasExtra("previous_state")) {
-            Log.i(TAG, "getAndSetData: trying to restore game");
-            String previousState = getIntent().getStringExtra("previous_state");
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            Type type = new TypeToken<GameState>() {}.getType();
-            GameState state = gson.fromJson(previousState, type);
+        if (getIntent().hasExtra("state")) {
+            Log.i(TAG, "getAndSetData: trying to set up game");
+            Serializable s = getIntent().getSerializableExtra("state");
+            GameState state = (GameState) s;
             assert state != null;
             Log.i(TAG, "getAndSetData: conversion correct");
             this.n = state.n;
@@ -88,6 +68,13 @@ public class GameActivity extends BaseFullscreenActivity {
             this.players = state.players;
             this.turnPlayer = state.turnPlayer-1; // -1 because in initialize we call nextPlayer() which increments the turn
             this.status = state.status;
+            if (this.randomOrder) {
+                Collections.shuffle(this.players);
+            }
+        }
+        else {
+            Log.i(TAG, "getAndSetData: No extra received, cannot create game");
+            finish();
         }
     }
 
@@ -177,12 +164,14 @@ public class GameActivity extends BaseFullscreenActivity {
 
     private void endGame() {
         getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
+        // TODO: show results of match, winner, ranking etc
+        // TODO: Update statistics (either bare SharedPreferences or in statistics class)
     }
 
     protected void updateOverview() {
         SpannableString overview = new SpannableString("");
         for (Player player : players) {
-            SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "Player %d:  %d\n", player.getNumber(), player.getPoints()));
+            SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "%s %d:  %d\n", getString(R.string.player), player.getNumber(), player.getPoints()));
             s.setSpan(new ForegroundColorSpan(player.getColor()), 0, s.length(), 0);
             overview = new SpannableString(TextUtils.concat(overview, s));
         }
@@ -277,18 +266,20 @@ public class GameActivity extends BaseFullscreenActivity {
     @Override
     public void onBackPressed() {
         final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-        mBuilder.setTitle("Return Home?")
-                .setMessage("Do you really want to leave? You can continue this game later in the Home screen with \'continue game\' ")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        mBuilder.setTitle(R.string.return_home_title)
+                .setMessage(R.string.return_home_body)
+                .setNegativeButton(R.string.return_home_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
                     }
                 })
-                .setPositiveButton("Leave", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.return_home_leave, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        saveGameState();
+                        if (cardsLeft != 0) {
+                            saveGameState();
+                        }
                         Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
@@ -300,29 +291,9 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void saveGameState() {
-        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, status, randomOrder);
+        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, status, false);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
         preferences.edit().putString("state", gson.toJson(state)).apply();
     }
-
-    public static class GameState implements Serializable {
-        ArrayList<Player> players;
-        ArrayList<Integer> objectA;
-        int n, m, turnPlayer, cardsLeft;
-        int [] status;
-        boolean randomOrder;
-
-        public GameState(ArrayList<Player> players, ArrayList<Integer> objectA, int n, int m, int turnPlayer, int cardsLeft, int[] status, boolean randomOrder) {
-            this.players = players;
-            this.objectA = objectA;
-            this.n = n;
-            this.m = m;
-            this.turnPlayer = turnPlayer;
-            this.cardsLeft = cardsLeft;
-            this.status = status;
-            this.randomOrder = randomOrder;
-        }
-    }
-
 }

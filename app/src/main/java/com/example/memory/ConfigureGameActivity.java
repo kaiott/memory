@@ -11,6 +11,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ConfigureGameActivity extends BaseFullscreenActivity {
     static ArrayList<Player> players;
@@ -60,7 +61,22 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
 
     public void playClicked(View view) {
         Intent intent = new Intent(view.getContext(), GameActivity.class);
-        intent.putExtra("players", players);
+        int n = 6;
+        int m = 6;
+        int cardsLeft = n*m;
+        boolean randomOrder = false;
+        ArrayList<Integer> objectA = new ArrayList<>(36);
+        int[] status = new int[n*m];
+        int turnPlayer = 0;
+        for (int i = 0; i < 9; i ++) {
+            objectA.add(i);
+            objectA.add(i);
+            objectA.add(i);
+            objectA.add(i);
+        }
+        Collections.shuffle(objectA);
+        GameState state = new GameState(players,objectA,n,m,turnPlayer,cardsLeft,status, randomOrder);
+        intent.putExtra("state", state);
         startActivity(intent);
     }
 
