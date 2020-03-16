@@ -19,20 +19,16 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
 
 public class GameActivity extends BaseFullscreenActivity {
 
     private final static String TAG = "GameActivity";
-    public final static int COVERED = 0, TURNED = 1, TAKEN = 2;
+    public final static int COVERED = 0, VISIBLE = 1, TURNED = 2, TAKEN = 3;
 
     Guideline [] verticalGuides = new Guideline[5];
     TextView playerBody, pointsBody, playerOverview;
@@ -42,8 +38,9 @@ public class GameActivity extends BaseFullscreenActivity {
     ArrayList<Integer> objectA;
 
     int n, m, numTries, oldPosition, turnPlayer, cardsLeft;
-    int [] status, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
+    int [] boardStatus, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
     boolean randomOrder;
+    int durationFadeOut, durationComputerThink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +52,8 @@ public class GameActivity extends BaseFullscreenActivity {
 
     protected void getAndSetData() {
         if (getIntent().hasExtra("state")) {
+            durationFadeOut = 1000;
+            durationComputerThink = 800;
             Log.i(TAG, "getAndSetData: trying to set up game");
             Serializable s = getIntent().getSerializableExtra("state");
             GameState state = (GameState) s;
@@ -67,7 +66,7 @@ public class GameActivity extends BaseFullscreenActivity {
             this.objectA = state.objectA;
             this.players = state.players;
             this.turnPlayer = state.turnPlayer-1; // -1 because in initialize we call nextPlayer() which increments the turn
-            this.status = state.status;
+            this.boardStatus = state.status;
             if (this.randomOrder) {
                 Collections.shuffle(this.players);
             }
@@ -79,15 +78,16 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     public void cardSelected(int position) {
-        if (status[position] == COVERED && numTries < 2) {
+        if ((boardStatus[position] == COVERED || boardStatus[position] == TURNED) && numTries < 2 && players.get(turnPlayer).getType() == Player.TYPE_HUMAN) {
             turnCard(position);
         }
     }
 
     public void turnCard(int position) {
+        Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
         numTries++;
         cards.get(position).setImageResource(catIDs[objectA.get(position)]);
-        status[position] = TURNED;
+        boardStatus[position] = VISIBLE;
         Toast.makeText(this, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)), Toast.LENGTH_SHORT).show();
         if (numTries == 1) {
             oldPosition = position;
@@ -96,14 +96,32 @@ public class GameActivity extends BaseFullscreenActivity {
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
                 addPoints();
                 cardsLeft -= 2;
-                status[oldPosition] = TAKEN;
-                status[position] = TAKEN;
+                boardStatus[oldPosition] = TAKEN;
+                boardStatus[position] = TAKEN;
             }
             else {
-                status[oldPosition] = COVERED;
-                status[position] = COVERED;
+                boardStatus[oldPosition] = TURNED;
+                boardStatus[position] = TURNED;
             }
             new EndTurnTask().execute(oldPosition, position);
+        }
+    }
+
+    private class LetComputerDoTurn extends AsyncTask<String, Void, Integer> {
+        protected Integer doInBackground(String... args) {
+            Log.i(TAG, "doInBackground: computer turn started");
+            try {
+                Thread.sleep(durationComputerThink);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return players.get(turnPlayer).makeMove(boardStatus);
+        }
+        protected void onPostExecute(Integer result) {
+            turnCard(result);
+            if (numTries < 2) {
+                new LetComputerDoTurn().execute();
+            }
         }
     }
 
@@ -113,7 +131,7 @@ public class GameActivity extends BaseFullscreenActivity {
             pos1 = args[0];
             pos2 = args[1];
             try {
-                Thread.sleep(1000);
+                Thread.sleep(durationFadeOut);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -127,8 +145,8 @@ public class GameActivity extends BaseFullscreenActivity {
                 nextTurn();
             }
             else {
-                status[pos1] = COVERED;
-                status[pos2] = COVERED;
+                boardStatus[pos1] = COVERED;
+                boardStatus[pos2] = COVERED;
                 cards.get(pos1).setImageResource(R.drawable.card_back);
                 cards.get(pos2).setImageResource(R.drawable.card_back);
                 nextPlayer();
@@ -145,6 +163,10 @@ public class GameActivity extends BaseFullscreenActivity {
     private void nextTurn() {
         numTries = 0;
         oldPosition = -1;
+        if (players.get(turnPlayer).getType() != Player.TYPE_HUMAN) {
+            Log.i(TAG, "nextTurn: we are trying to let the computer do the turn");
+            new LetComputerDoTurn().execute();
+        }
     }
 
     private void nextPlayer() {
@@ -193,7 +215,7 @@ public class GameActivity extends BaseFullscreenActivity {
             verticalGuides[i].setGuidelinePercent((i + 1f )/n);
         }
         for (int pos = 0; pos < n*m; pos++) {
-            if(status[pos] == TAKEN || this.row(pos) >= n  || this.col(pos) >= n ) {
+            if(boardStatus[pos] == TAKEN || this.row(pos) >= n  || this.col(pos) >= n ) {
                 cards.get(pos).setVisibility(View.INVISIBLE);
             }
         }
@@ -291,7 +313,7 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void saveGameState() {
-        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, status, false);
+        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus, false);
         GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
         gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
         Gson gson = gsonBilder.create();

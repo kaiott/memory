@@ -31,7 +31,7 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
         addPlayer = findViewById(R.id.button_add_player);
         players = new ArrayList<>();
         players.add(PlayerFactory.getInstance(Player.TYPE_HUMAN));
-        players.add(PlayerFactory.getInstance(Player.TYPE_HUMAN));
+        players.add(PlayerFactory.getInstance(Player.TYPE_COMP_BEGINNER));
 
         updateUI();
     }
