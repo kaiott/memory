@@ -30,8 +30,8 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
         recyclerView = findViewById(R.id.recyclerView);
         addPlayer = findViewById(R.id.button_add_player);
         players = new ArrayList<>();
-        players.add(new Player(Player.TYPE_HUMAN));
-        players.add(new Player(Player.TYPE_COMP_BEGINNER));
+        players.add(PlayerFactory.getInstance(Player.TYPE_HUMAN));
+        players.add(PlayerFactory.getInstance(Player.TYPE_HUMAN));
 
         updateUI();
     }
@@ -50,7 +50,7 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
     }
 
     public void addPlayerClicked(View view) {
-        players.add(new Player(Player.TYPE_HUMAN));
+        players.add(PlayerFactory.getInstance(Player.TYPE_HUMAN));
         updateUI();
     }
 

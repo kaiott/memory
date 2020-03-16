@@ -42,7 +42,11 @@ public class MainActivity extends BaseFullscreenActivity {
 
     public void continueGameClicked(View view) {
         Log.i(TAG, "continueGameClicked: ");
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
+        gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
+        Gson gson = gsonBilder.create();
+
         Type type = new TypeToken<GameState>() {}.getType();
         GameState state = gson.fromJson(previous_state, type);
         assert state != null;

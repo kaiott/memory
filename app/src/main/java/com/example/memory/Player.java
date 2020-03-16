@@ -1,10 +1,8 @@
 package com.example.memory;
 
-import android.graphics.Color;
-
 import java.io.Serializable;
 
-public class Player implements Serializable {
+public abstract class Player implements Serializable {
     public static final int TYPE_HUMAN = 0, TYPE_COMP_BEGINNER = 1, TYPE_COMP_MEDIUM = 2, TYPE_COMP_GOD = 3;
     private int color;
     private int type;
@@ -60,4 +58,6 @@ public class Player implements Serializable {
     public void setNumber(int number) {
         this.number = number;
     }
+
+    public abstract int makeMove(final int [] status);
 }

@@ -292,7 +292,10 @@ public class GameActivity extends BaseFullscreenActivity {
 
     private void saveGameState() {
         GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, status, false);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
+        gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
+        Gson gson = gsonBilder.create();
+
         SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
         preferences.edit().putString("state", gson.toJson(state)).apply();
     }
