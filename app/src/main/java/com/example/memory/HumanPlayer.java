@@ -6,7 +6,8 @@ public class HumanPlayer extends Player {
     }
 
     @Override
-    public int makeMove(int[] status) {
+    public int makeMove(int[] status, int[][] buckets, int visible_id) {
         return 0;
     }
+
 }

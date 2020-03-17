@@ -1,6 +1,8 @@
 package com.example.memory;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,7 +45,36 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, final int position) {
         players.get(position).setNumber(position);
-        holder.playerImage.setImageResource(R.drawable.ic_person_black_24dp);
+
+        final EventViewHolder reference_copy = holder;
+
+        setTypeIcon(holder, position);
+
+        holder.playerImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
+                mBuilder.setTitle("Player Type")
+                        .setMessage("Choose the type of the player")
+                        .setNegativeButton("Comp", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                players.set(position, PlayerFactory.changeType(players.get(position), Player.TYPE_COMP_GOD));
+                                setTypeIcon(reference_copy, position);
+                            }
+                        })
+                        .setPositiveButton("Human", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                players.set(position, PlayerFactory.changeType(players.get(position), Player.TYPE_HUMAN));
+                                setTypeIcon(reference_copy, position);
+                            }
+                        });
+                mBuilder.create();
+                mBuilder.show();
+            }
+        });
+
         holder.colorView.setBackgroundColor(players.get(position).getColor());
         if (position != 0) {
             holder.deleteImage.setImageResource(R.drawable.ic_close_red_48dp);
@@ -58,6 +90,18 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
             }
         });
         holder.playerText.setText(String.format(Locale.ENGLISH, "%s %d", context.getString(R.string.player), position+1));
+    }
+
+    private void setTypeIcon(@NonNull EventViewHolder holder, final int position) {
+        switch (players.get(position).getType()) {
+            case Player.TYPE_HUMAN:
+                holder.playerImage.setImageResource(R.drawable.ic_person_black_24dp);
+                break;
+            case Player.TYPE_COMP_BEGINNER:
+            case Player.TYPE_COMP_GOD:
+                holder.playerImage.setImageResource(R.drawable.ic_computer_black_24dp);
+                break;
+        }
     }
 
     @Override

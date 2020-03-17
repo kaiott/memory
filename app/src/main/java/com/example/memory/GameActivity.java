@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -41,6 +42,7 @@ public class GameActivity extends BaseFullscreenActivity {
     int [] boardStatus, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
     boolean randomOrder;
     int durationFadeOut, durationComputerThink;
+    int[][] buckets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +52,47 @@ public class GameActivity extends BaseFullscreenActivity {
         initializeMembers();
     }
 
+    protected void addToBucket(int position) {
+        int bucketNumber = objectA.get(position);
+        int[] bucket = buckets[bucketNumber];
+        boolean found = false;
+        for (int i = 0; i < bucket.length-1; i++) {
+            if (bucket[i] == position) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            for (int i = 0; i < bucket.length-1; i++) {
+                if (bucket[i] == -1) {
+                    bucket[i] = position;
+                    bucket[bucket.length-1]++;
+                    break;
+                }
+            }
+        }
+    }
+    protected void removeFromBucket(int position) {
+        int bucketNumber = objectA.get(position);
+        int[] bucket = buckets[bucketNumber];
+        for (int i = 0; i < bucket.length-1; i++) {
+            if (bucket[i] == position) {
+                bucket[i] = -1;
+                bucket[bucket.length-1]--;
+                break;
+            }
+        }
+    }
+
     protected void getAndSetData() {
         if (getIntent().hasExtra("state")) {
             durationFadeOut = 1000;
             durationComputerThink = 800;
+            buckets = new int[9][5];
+            for (int[] bucket : buckets) {
+                Arrays.fill(bucket, -1);
+                bucket[bucket.length-1] = 0;
+            }
             Log.i(TAG, "getAndSetData: trying to set up game");
             Serializable s = getIntent().getSerializableExtra("state");
             GameState state = (GameState) s;
@@ -85,24 +124,33 @@ public class GameActivity extends BaseFullscreenActivity {
 
     public void turnCard(int position) {
         Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
+        Log.i(TAG, "turnCard: position to turn over: " + position);
         numTries++;
         cards.get(position).setImageResource(catIDs[objectA.get(position)]);
         boardStatus[position] = VISIBLE;
-        Toast.makeText(this, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)), Toast.LENGTH_SHORT).show();
+        Log.i(TAG, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)));
         if (numTries == 1) {
+            Log.i(TAG, "turnCard: first try");
             oldPosition = position;
         }
         if (numTries == 2) {
+            Log.i(TAG, "turnCard: second try");
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
                 addPoints();
                 cardsLeft -= 2;
                 boardStatus[oldPosition] = TAKEN;
                 boardStatus[position] = TAKEN;
+                removeFromBucket(oldPosition);
+                removeFromBucket(position);
+                
             }
             else {
                 boardStatus[oldPosition] = TURNED;
                 boardStatus[position] = TURNED;
+                addToBucket(oldPosition);
+                addToBucket(position);
             }
+            Log.i(TAG, "turnCard: buckets: " + Arrays.deepToString(buckets));
             new EndTurnTask().execute(oldPosition, position);
         }
     }
@@ -115,7 +163,7 @@ public class GameActivity extends BaseFullscreenActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return players.get(turnPlayer).makeMove(boardStatus);
+            return players.get(turnPlayer).makeMove(boardStatus, buckets, oldPosition == -1 ? -1 : objectA.get(oldPosition));
         }
         protected void onPostExecute(Integer result) {
             turnCard(result);
@@ -161,19 +209,18 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void nextTurn() {
+        if (cardsLeft == 0) {
+            endGame();
+            return;
+        }
         numTries = 0;
         oldPosition = -1;
         if (players.get(turnPlayer).getType() != Player.TYPE_HUMAN) {
-            Log.i(TAG, "nextTurn: we are trying to let the computer do the turn");
             new LetComputerDoTurn().execute();
         }
     }
 
     private void nextPlayer() {
-        if (cardsLeft == 0) {
-            endGame();
-            return;
-        }
         turnPlayer++;
         turnPlayer %= players.size();
         playerBody.setText("Player " + turnPlayer);
@@ -321,4 +368,5 @@ public class GameActivity extends BaseFullscreenActivity {
         SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
         preferences.edit().putString("state", gson.toJson(state)).apply();
     }
+
 }

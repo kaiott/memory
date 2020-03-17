@@ -9,4 +9,12 @@ public class PlayerFactory {
             default: return null;
         }
     }
+
+    public static Player changeType(Player oldPlayer, int newType) {
+        Player newPlayer = getInstance(newType);
+        newPlayer.setNumber(oldPlayer.getNumber());
+        newPlayer.setColor(oldPlayer.getColor());
+        newPlayer.setPoints(oldPlayer.getPoints());
+        return newPlayer;
+    }
 }

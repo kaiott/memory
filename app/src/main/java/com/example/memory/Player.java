@@ -59,5 +59,17 @@ public abstract class Player implements Serializable {
         this.number = number;
     }
 
-    public abstract int makeMove(final int [] status);
+    public abstract int makeMove(final int [] status, final int [][] buckets, final int visible_id);
+
+    protected int makeRandomMove(final int[] status) {
+        int [] eligible = new int[status.length];
+        int eligibleCount = 0;
+        for (int pos = 0; pos < status.length; pos ++) {
+            if (status[pos] == GameActivity.COVERED || status[pos] == GameActivity.TURNED) {
+                eligible[eligibleCount] = pos;
+                eligibleCount++;
+            }
+        }
+        return eligible[(int) (Math.random()*eligibleCount)];
+    }
 }
