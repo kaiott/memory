@@ -4,11 +4,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -19,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.EventViewHolder> {
+
+    private static final String TAG = "PlayerTileAdapter";
 
     private int[] colors = {Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA};
     ArrayList<Player> players;
@@ -53,29 +60,18 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
         holder.playerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
-                mBuilder.setTitle("Player Type")
-                        .setMessage("Choose the type of the player")
-                        .setNegativeButton("Comp", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                players.set(position, PlayerFactory.changeType(players.get(position), Player.TYPE_COMP_GOD));
-                                setTypeIcon(reference_copy, position);
-                            }
-                        })
-                        .setPositiveButton("Human", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                players.set(position, PlayerFactory.changeType(players.get(position), Player.TYPE_HUMAN));
-                                setTypeIcon(reference_copy, position);
-                            }
-                        });
-                mBuilder.create();
-                mBuilder.show();
+                reference_copy.playerTypeSpinner.setVisibility(View.VISIBLE);
+                reference_copy.playerTypeSpinner.performClick();
             }
         });
 
         holder.colorView.setBackgroundColor(players.get(position).getColor());
+        holder.colorView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+
         if (position != 0) {
             holder.deleteImage.setImageResource(R.drawable.ic_close_red_48dp);
             holder.deleteImage.setVisibility(View.VISIBLE);
@@ -89,17 +85,47 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
                 }
             }
         });
+
         holder.playerText.setText(String.format(Locale.ENGLISH, "%s %d", context.getString(R.string.player), position+1));
+
+        holder.playerTypeSpinner.setVisibility(View.INVISIBLE);
+        final String[] themes = {"Human", "AI Beginner", "AI Medium","AI GOD"};
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, themes);
+        holder.playerTypeSpinner.setAdapter(mAdapter);
+        holder.playerTypeSpinner.setSelection(players.get(position).getType(),false);
+        holder.playerTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int type, long id) {
+                Log.i(TAG, "onItemSelected: position: " + position + ", type apriori:" + type);
+
+                players.set(position, PlayerFactory.changeType(players.get(position), type));
+                Log.i(TAG, "onItemSelected: position: " + position + ", type after change:" + players.get(position).getType());
+                setTypeIcon(reference_copy, position);
+                reference_copy.playerTypeSpinner.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                reference_copy.playerTypeSpinner.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void setTypeIcon(@NonNull EventViewHolder holder, final int position) {
+        Log.i(TAG, "onItemSelected: position + " + position + ", type:" + players.get(position).getType());
         switch (players.get(position).getType()) {
             case Player.TYPE_HUMAN:
+                Log.i(TAG, "setTypeIcon: human");
                 holder.playerImage.setImageResource(R.drawable.ic_person_black_24dp);
                 break;
             case Player.TYPE_COMP_BEGINNER:
-            case Player.TYPE_COMP_GOD:
+                Log.i(TAG, "setTypeIcon: beginner");
                 holder.playerImage.setImageResource(R.drawable.ic_computer_black_24dp);
+                break;
+            case Player.TYPE_COMP_MEDIUM:
+            case Player.TYPE_COMP_GOD:
+                Log.i(TAG, "setTypeIcon: god");
+                holder.playerImage.setImageResource(R.drawable.ic_android_black_24dp);
                 break;
         }
     }
@@ -113,6 +139,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
         TextView colorView, playerText;
         ImageView playerImage, deleteImage;
+        Spinner playerTypeSpinner;
         ConstraintLayout constraintLayout;
 
         public EventViewHolder(@NonNull View itemView) {
@@ -121,6 +148,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
             colorView = itemView.findViewById(R.id.colorView);
             deleteImage = itemView.findViewById(R.id.deleteView);
             playerText = itemView.findViewById(R.id.player_text_view);
+            playerTypeSpinner = itemView.findViewById(R.id.spinner_type_player);
         }
     }
 }

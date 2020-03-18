@@ -56,6 +56,8 @@ public class MainActivity extends BaseFullscreenActivity {
     }
 
     public void statisticsClicked(View view) {
+        ColorChooserDialog dialog = new ColorChooserDialog();
+        dialog.show(getSupportFragmentManager(), "example dialog");
         Toast.makeText(this,"Statistics clicked", Toast.LENGTH_SHORT).show();
     }
 
