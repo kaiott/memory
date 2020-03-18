@@ -51,7 +51,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, final int position) {
-        players.get(position).setNumber(position);
+        players.get(position).setNumber(position+1);
 
         final EventViewHolder reference_copy = holder;
 
@@ -86,7 +86,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
             }
         });
 
-        holder.playerText.setText(String.format(Locale.ENGLISH, "%s %d", context.getString(R.string.player), position+1));
+        holder.playerText.setText(String.format(Locale.ENGLISH, "%s %d", context.getString(R.string.player), players.get(position).getNumber()));
 
         holder.playerTypeSpinner.setVisibility(View.INVISIBLE);
         final String[] themes = {"Human", "AI Beginner", "AI Medium","AI GOD"};

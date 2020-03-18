@@ -8,9 +8,8 @@ public class GameState implements Serializable {
     ArrayList<Integer> objectA;
     int n, m, turnPlayer, cardsLeft;
     int [] status;
-    boolean randomOrder;
 
-    public GameState(ArrayList<Player> players, ArrayList<Integer> objectA, int n, int m, int turnPlayer, int cardsLeft, int[] status, boolean randomOrder) {
+    public GameState(ArrayList<Player> players, ArrayList<Integer> objectA, int n, int m, int turnPlayer, int cardsLeft, int[] status) {
         this.players = players;
         this.objectA = objectA;
         this.n = n;
@@ -18,6 +17,5 @@ public class GameState implements Serializable {
         this.turnPlayer = turnPlayer;
         this.cardsLeft = cardsLeft;
         this.status = status;
-        this.randomOrder = randomOrder;
     }
 }

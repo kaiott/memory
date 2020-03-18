@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,7 +23,6 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -42,7 +40,6 @@ public class GameActivity extends BaseFullscreenActivity {
 
     int n, m, numTries, oldPosition, turnPlayer, cardsLeft;
     int [] boardStatus, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
-    boolean randomOrder;
     int durationFadeOut, durationComputerThink;
     int[][] buckets;
 
@@ -103,14 +100,10 @@ public class GameActivity extends BaseFullscreenActivity {
             this.n = state.n;
             this.m = state.m;
             this.cardsLeft = state.cardsLeft;
-            this.randomOrder = state.randomOrder;
             this.objectA = state.objectA;
             this.players = state.players;
             this.turnPlayer = state.turnPlayer-1; // -1 because in initialize we call nextPlayer() which increments the turn
             this.boardStatus = state.status;
-            if (this.randomOrder) {
-                Collections.shuffle(this.players);
-            }
         }
         else {
             Log.i(TAG, "getAndSetData: No extra received, cannot create game");
@@ -225,7 +218,7 @@ public class GameActivity extends BaseFullscreenActivity {
     private void nextPlayer() {
         turnPlayer++;
         turnPlayer %= players.size();
-        playerBody.setText("Player " + turnPlayer);
+        playerBody.setText("Player " + players.get(turnPlayer).getNumber());
         playerBody.setTextColor(players.get(turnPlayer).getColor());
         pointsBody.setText(""+players.get(turnPlayer).getPoints());
         pointsBody.setTextColor(players.get(turnPlayer).getColor());
@@ -236,7 +229,7 @@ public class GameActivity extends BaseFullscreenActivity {
     private void endGame() {
         getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
         // TODO: show results of match, winner, ranking etc
-        makeFilterAlert().show();
+        makeEndGameAlert().show();
         // TODO: Update statistics (either bare SharedPreferences or in statistics class)
     }
 
@@ -251,7 +244,7 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
 
-    protected AlertDialog makeFilterAlert() {
+    protected AlertDialog makeEndGameAlert() {
         final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
 
         LayoutInflater inflater = getLayoutInflater();
@@ -303,61 +296,9 @@ public class GameActivity extends BaseFullscreenActivity {
     }
     private int position(int row, int column) { return m*row + column; }
 
-    public void makeGrid(int n) {
-        Log.i(TAG, "makeGrid: setting grid to n =" +n);
-        for (int i = 0; i< verticalGuides.length; i++) {
-            verticalGuides[i].setGuidelinePercent((i + 1f )/n);
-        }
-        for (int pos = 0; pos < n*m; pos++) {
-            if(boardStatus[pos] == TAKEN || this.row(pos) >= n  || this.col(pos) >= n ) {
-                cards.get(pos).setVisibility(View.INVISIBLE);
-            }
-        }
-    }
+    public void distributeCards(int n, int m) {
 
-    protected void initializeMembers() {
-        cards = new ArrayList<>();
-        cards.add((ImageView) findViewById(R.id.card0));
-        cards.add((ImageView) findViewById(R.id.card1));
-        cards.add((ImageView) findViewById(R.id.card2));
-        cards.add((ImageView) findViewById(R.id.card3));
-        cards.add((ImageView) findViewById(R.id.card4));
-        cards.add((ImageView) findViewById(R.id.card5));
-        cards.add((ImageView) findViewById(R.id.card6));
-        cards.add((ImageView) findViewById(R.id.card7));
-        cards.add((ImageView) findViewById(R.id.card8));
-        cards.add((ImageView) findViewById(R.id.card9));
-        cards.add((ImageView) findViewById(R.id.card10));
-        cards.add((ImageView) findViewById(R.id.card11));
-        cards.add((ImageView) findViewById(R.id.card12));
-        cards.add((ImageView) findViewById(R.id.card13));
-        cards.add((ImageView) findViewById(R.id.card14));
-        cards.add((ImageView) findViewById(R.id.card15));
-        cards.add((ImageView) findViewById(R.id.card16));
-        cards.add((ImageView) findViewById(R.id.card17));
-        cards.add((ImageView) findViewById(R.id.card18));
-        cards.add((ImageView) findViewById(R.id.card19));
-        cards.add((ImageView) findViewById(R.id.card20));
-        cards.add((ImageView) findViewById(R.id.card21));
-        cards.add((ImageView) findViewById(R.id.card22));
-        cards.add((ImageView) findViewById(R.id.card23));
-        cards.add((ImageView) findViewById(R.id.card24));
-        cards.add((ImageView) findViewById(R.id.card25));
-        cards.add((ImageView) findViewById(R.id.card26));
-        cards.add((ImageView) findViewById(R.id.card27));
-        cards.add((ImageView) findViewById(R.id.card28));
-        cards.add((ImageView) findViewById(R.id.card29));
-        cards.add((ImageView) findViewById(R.id.card30));
-        cards.add((ImageView) findViewById(R.id.card31));
-        cards.add((ImageView) findViewById(R.id.card32));
-        cards.add((ImageView) findViewById(R.id.card33));
-        cards.add((ImageView) findViewById(R.id.card34));
-        cards.add((ImageView) findViewById(R.id.card35));
-        verticalGuides[0] = findViewById(R.id.guidelineV1);
-        verticalGuides[1] = findViewById(R.id.guidelineV2);
-        verticalGuides[2] = findViewById(R.id.guidelineV3);
-        verticalGuides[3] = findViewById(R.id.guidelineV4);
-        verticalGuides[4] = findViewById(R.id.guidelineV5);
+
         for (ImageView card : cards) {
             card.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -368,8 +309,86 @@ public class GameActivity extends BaseFullscreenActivity {
                 }
             });
         }
+    }
 
-        makeGrid(n);
+    public void makeGrid(int n, int m, ArrayList<ImageView> localCards) {
+        cards = new ArrayList<>();
+        Log.i(TAG, "makeGrid: setting grid to nxm = " + n +"x" +m);
+        for (int i = 0; i< verticalGuides.length; i++) {
+            verticalGuides[i].setGuidelinePercent((i + 1f )/m);
+        }
+
+        for (int localPos = 0; localPos < localCards.size(); localPos++) {
+            if (localPos / 6 < n && localPos % 6 < m) {
+                cards.add(localCards.get(localPos));
+                Log.i(TAG, "makeGrid: card added, position "+ localPos + " row: " + row(localPos) + " col: " + col(localPos));
+            }
+            else {
+                localCards.get(localPos).setVisibility(View.INVISIBLE);
+            }
+        }
+
+        for (int pos = 0; pos < cards.size(); pos++) {
+            if (boardStatus[pos] == TAKEN) {
+                cards.get(pos).setVisibility(View.INVISIBLE);
+            }
+        }
+        for (ImageView card : cards) {
+            card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cardSelected(cards.indexOf(view));
+                }
+            });
+        }
+    }
+
+    protected void initializeMembers() {
+        //temporary local list of ImageViews, not to be confused with the global one
+        ArrayList<ImageView> localCards = new ArrayList<>();
+        localCards.add((ImageView) findViewById(R.id.card0));
+        localCards.add((ImageView) findViewById(R.id.card1));
+        localCards.add((ImageView) findViewById(R.id.card2));
+        localCards.add((ImageView) findViewById(R.id.card3));
+        localCards.add((ImageView) findViewById(R.id.card4));
+        localCards.add((ImageView) findViewById(R.id.card5));
+        localCards.add((ImageView) findViewById(R.id.card6));
+        localCards.add((ImageView) findViewById(R.id.card7));
+        localCards.add((ImageView) findViewById(R.id.card8));
+        localCards.add((ImageView) findViewById(R.id.card9));
+        localCards.add((ImageView) findViewById(R.id.card10));
+        localCards.add((ImageView) findViewById(R.id.card11));
+        localCards.add((ImageView) findViewById(R.id.card12));
+        localCards.add((ImageView) findViewById(R.id.card13));
+        localCards.add((ImageView) findViewById(R.id.card14));
+        localCards.add((ImageView) findViewById(R.id.card15));
+        localCards.add((ImageView) findViewById(R.id.card16));
+        localCards.add((ImageView) findViewById(R.id.card17));
+        localCards.add((ImageView) findViewById(R.id.card18));
+        localCards.add((ImageView) findViewById(R.id.card19));
+        localCards.add((ImageView) findViewById(R.id.card20));
+        localCards.add((ImageView) findViewById(R.id.card21));
+        localCards.add((ImageView) findViewById(R.id.card22));
+        localCards.add((ImageView) findViewById(R.id.card23));
+        localCards.add((ImageView) findViewById(R.id.card24));
+        localCards.add((ImageView) findViewById(R.id.card25));
+        localCards.add((ImageView) findViewById(R.id.card26));
+        localCards.add((ImageView) findViewById(R.id.card27));
+        localCards.add((ImageView) findViewById(R.id.card28));
+        localCards.add((ImageView) findViewById(R.id.card29));
+        localCards.add((ImageView) findViewById(R.id.card30));
+        localCards.add((ImageView) findViewById(R.id.card31));
+        localCards.add((ImageView) findViewById(R.id.card32));
+        localCards.add((ImageView) findViewById(R.id.card33));
+        localCards.add((ImageView) findViewById(R.id.card34));
+        localCards.add((ImageView) findViewById(R.id.card35));
+        verticalGuides[0] = findViewById(R.id.guidelineV1);
+        verticalGuides[1] = findViewById(R.id.guidelineV2);
+        verticalGuides[2] = findViewById(R.id.guidelineV3);
+        verticalGuides[3] = findViewById(R.id.guidelineV4);
+        verticalGuides[4] = findViewById(R.id.guidelineV5);
+
+        makeGrid(n, m, localCards);
 
         playerBody = findViewById(R.id.player_body);
         pointsBody = findViewById(R.id.points_body);
@@ -407,7 +426,7 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void saveGameState() {
-        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus, false);
+        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus);
         GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
         gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
         Gson gson = gsonBilder.create();

@@ -29,12 +29,13 @@
 
     <ImageButton
         android:id="@+id/button_back_to_main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="62dp"
         android:layout_marginStart="@dimen/button_separation_main"
         android:layout_marginBottom="@dimen/button_separation_main"
         android:onClick="backClicked"
-        android:src="@drawable/ic_arrow_back_red_60dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/exit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -49,4 +50,30 @@
         app:layout_constraintBottom_toBottomOf="@+id/button_back_to_main"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/button_back_to_main" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Board size:"
+        app:layout_constraintBottom_toTopOf="@+id/checkBox_random_order"
+        app:layout_constraintStart_toStartOf="@+id/checkBox_random_order" />
+
+    <Spinner
+        android:id="@+id/spinner_board_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="@+id/checkBox_random_order"
+        app:layout_constraintTop_toTopOf="@+id/textView" />
+
+    <CheckBox
+        android:id="@+id/checkBox_random_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="Random Player Order"
+        app:layout_constraintBottom_toTopOf="@+id/button_back_to_main"
+        app:layout_constraintStart_toEndOf="@+id/button_back_to_main" />
 </androidx.constraintlayout.widget.ConstraintLayout>
