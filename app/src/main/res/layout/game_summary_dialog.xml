@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/rank_first"
+        android:layout_width="65dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/laurel_gold"
+        android:cropToPadding="true"
+        android:paddingBottom="8dp"
+        android:scaleType="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/rank_1_golden_40" />
+
+    <ImageView
+        android:id="@+id/rank_second"
+        android:layout_width="57dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/laurel_gold"
+        android:paddingBottom="4dp"
+        android:scaleType="center"
+        app:layout_constraintEnd_toEndOf="@+id/rank_first"
+        app:layout_constraintTop_toBottomOf="@+id/rank_first"
+        app:srcCompat="@drawable/rank_2_golden" />
+
+    <ImageView
+        android:id="@+id/rank_third"
+        android:layout_width="49dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/laurel_gold"
+        android:paddingBottom="4dp"
+        android:scaleType="center"
+        app:layout_constraintEnd_toEndOf="@+id/rank_second"
+        app:layout_constraintTop_toBottomOf="@+id/rank_second"
+        app:srcCompat="@drawable/rank_3_golden" />
+
+    <TextView
+        android:id="@+id/rank_first_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="Player 0 : 3 pairs"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/rank_first"
+        app:layout_constraintStart_toEndOf="@+id/rank_first"
+        app:layout_constraintTop_toTopOf="@+id/rank_first" />
+
+    <TextView
+        android:id="@+id/rank_second_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player 1: 2 pairs"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/rank_second"
+        app:layout_constraintStart_toStartOf="@+id/rank_first_view"
+        app:layout_constraintTop_toTopOf="@+id/rank_second" />
+
+    <TextView
+        android:id="@+id/rank_third_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player 3: 1 pair"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/rank_third"
+        app:layout_constraintStart_toStartOf="@+id/rank_second_view"
+        app:layout_constraintTop_toTopOf="@+id/rank_third" />
+
+    <TextView
+        android:id="@+id/rank_forth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="4."
+        app:layout_constraintEnd_toEndOf="@+id/rank_third"
+        app:layout_constraintTop_toBottomOf="@+id/rank_third" />
+
+    <TextView
+        android:id="@+id/rank_forth_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player 2: 1 pair"
+        app:layout_constraintBottom_toBottomOf="@+id/rank_forth"
+        app:layout_constraintStart_toStartOf="@+id/rank_third_view"
+        app:layout_constraintTop_toTopOf="@+id/rank_forth" />
+
+    <TextView
+        android:id="@+id/rank_fifth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="5."
+        app:layout_constraintEnd_toEndOf="@+id/rank_forth"
+        app:layout_constraintTop_toBottomOf="@+id/rank_forth" />
+
+    <TextView
+        android:id="@+id/rank_fifth_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player 4: 0 pairs"
+        app:layout_constraintBottom_toBottomOf="@+id/rank_fifth"
+        app:layout_constraintStart_toStartOf="@+id/rank_forth_view"
+        app:layout_constraintTop_toTopOf="@+id/rank_fifth" />
+
+    <TextView
+        android:id="@+id/rank_sixth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"
+        android:text="6."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/rank_fifth"
+        app:layout_constraintTop_toBottomOf="@+id/rank_fifth"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/rank_sixth_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/rank_sixth"
+        app:layout_constraintStart_toStartOf="@+id/rank_fifth_view"
+        app:layout_constraintTop_toTopOf="@+id/rank_sixth" />
+</androidx.constraintlayout.widget.ConstraintLayout>

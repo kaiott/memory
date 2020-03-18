@@ -12,6 +12,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
@@ -234,6 +236,7 @@ public class GameActivity extends BaseFullscreenActivity {
     private void endGame() {
         getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
         // TODO: show results of match, winner, ranking etc
+        makeFilterAlert().show();
         // TODO: Update statistics (either bare SharedPreferences or in statistics class)
     }
 
@@ -245,6 +248,50 @@ public class GameActivity extends BaseFullscreenActivity {
             overview = new SpannableString(TextUtils.concat(overview, s));
         }
         playerOverview.setText(overview, TextView.BufferType.SPANNABLE);
+    }
+
+
+    protected AlertDialog makeFilterAlert() {
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.game_summary_dialog, null);
+        Collections.sort(players, Collections.<Player>reverseOrder());
+        TextView[] rankViews = {view.findViewById(R.id.rank_first_view), view.findViewById(R.id.rank_second_view), view.findViewById(R.id.rank_third_view),
+        view.findViewById(R.id.rank_forth_view), view.findViewById(R.id.rank_fifth_view), view.findViewById(R.id.rank_sixth_view)};
+        View[] ranks = {view.findViewById(R.id.rank_first), view.findViewById(R.id.rank_second), view.findViewById(R.id.rank_third),
+                view.findViewById(R.id.rank_forth), view.findViewById(R.id.rank_fifth), view.findViewById(R.id.rank_sixth)};
+        for (int i = 0; i < 6; i++) {
+            if (i < players.size()) {
+                rankViews[i].setText(String.format(Locale.ENGLISH, "%s %d: %d",  getString(R.string.player), players.get(i).getNumber(), players.get(i).getPoints()));
+            }
+            else {
+                ranks[i].setVisibility(View.GONE);
+                rankViews[i].setVisibility(View.GONE);
+            }
+        }
+        mBuilder.setTitle("Game Summary")
+                .setView(view)
+                .setPositiveButton("Return Home", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .setNegativeButton("See Statistics", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //TODO: one day point to statistics class
+                        Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        return mBuilder.create();
     }
 
 

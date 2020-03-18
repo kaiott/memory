@@ -2,7 +2,7 @@ package com.example.memory;
 
 import java.io.Serializable;
 
-public abstract class Player implements Serializable {
+public abstract class Player implements Serializable, Comparable<Player>{
     public static final int TYPE_HUMAN = 0, TYPE_COMP_BEGINNER = 1, TYPE_COMP_MEDIUM = 2, TYPE_COMP_GOD = 3;
     private int color;
     private int type;
@@ -21,6 +21,11 @@ public abstract class Player implements Serializable {
         this();
         this.color = color;
         this.type = type;
+    }
+
+    @Override
+    public int compareTo(Player player) {
+        return Integer.compare(this.points, player.points);
     }
 
     public int getColor() {
