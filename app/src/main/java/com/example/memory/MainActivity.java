@@ -66,7 +66,9 @@ public class MainActivity extends BaseFullscreenActivity {
     }
 
     public void settingsClicked(android.view.View view) {
-        Toast.makeText(this,"Settings clicked", Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "settingsClicked: ");
+        Intent intent = new Intent(view.getContext(), SettingsActivity.class);
+        startActivity(intent);
     }
 
     public void creditsClicked(android.view.View view) {
@@ -75,9 +77,11 @@ public class MainActivity extends BaseFullscreenActivity {
 
     public void exitGameClicked(android.view.View view) {
         Log.i(TAG, "exitGameClicked: exitGameClicked");
+
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 }

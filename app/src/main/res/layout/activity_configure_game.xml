@@ -20,7 +20,7 @@
         android:id="@+id/button_add_player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         android:onClick="addPlayerClicked"
         android:src="@drawable/ic_add_red_48dp"
         app:layout_constraintEnd_toEndOf="parent"
