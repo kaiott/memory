@@ -209,7 +209,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <ImageView
-        android:id="@+id/imageView9"
+        android:id="@+id/card_back_view"
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView8"
@@ -219,12 +219,13 @@
         app:srcCompat="@drawable/card_back" />
 
     <ImageView
-        android:id="@+id/imageView10"
+        android:id="@+id/card_set_view"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="@+id/textView9"
-        app:layout_constraintEnd_toEndOf="@+id/imageView9"
-        app:layout_constraintStart_toStartOf="@+id/imageView9"
+        app:layout_constraintEnd_toEndOf="@+id/card_back_view"
+        app:layout_constraintStart_toStartOf="@+id/card_back_view"
         app:layout_constraintTop_toTopOf="@+id/textView9"
         app:srcCompat="@drawable/cat0" />
 

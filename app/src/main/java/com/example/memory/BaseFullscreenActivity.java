@@ -21,8 +21,13 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
     private static final String TAG = "BaseFullscreenActivity";
 
     // Default settings
-    final static boolean playMusicDefault = true, playSoundDefault = true, showAnimationDefault = false, isChildFriendlyVersionDefault = false, isDarkThemeDefault = true;
+    final static boolean playMusicDefault = true, playSoundDefault = true,
+            showAnimationDefault = false, isChildFriendlyVersionDefault = false,
+            isDarkThemeDefault = true;
+    final static int languageDefault = 0, cardBackDefault = 0, cardSetDefault = 0,
+            durationFadeOutDefault = 1000, durationComputerThinkDefault = 800;
     static boolean playMusic, playSound, showAnimation, isChildFriendlyVersion, isDarkTheme;
+    static int language, cardBack, cardSet, durationFadeOut, durationComputerThink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +79,18 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
 
     protected void getAndSetPreferences() {
         SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
+
         playMusic = preferences.getBoolean("playMusic", playMusicDefault);
         playSound = preferences.getBoolean("playSound", playSoundDefault);
         showAnimation= preferences.getBoolean("showAnimation", showAnimationDefault);
         isChildFriendlyVersion = preferences.getBoolean("isChildFriendlyVersion", isChildFriendlyVersionDefault);
         isDarkTheme = preferences.getBoolean("isDarkTheme", isDarkTheme);
+
+        language = preferences.getInt("language", languageDefault);
+        cardBack = preferences.getInt("cardBack", cardBackDefault);
+        cardSet = preferences.getInt("cardSet", cardSetDefault);
+        durationFadeOut = preferences.getInt("durationFadeOut", durationFadeOutDefault);
+        durationComputerThink = preferences.getInt("durationComputerThink", durationComputerThinkDefault);
     }
 
     //Bind/Unbind music service

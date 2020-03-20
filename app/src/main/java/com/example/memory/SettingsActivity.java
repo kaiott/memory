@@ -26,18 +26,21 @@ public class SettingsActivity extends BaseFullscreenActivity {
     protected void defineViews() {
         musicView = findViewById(R.id.music_view);
         soundView = findViewById(R.id.sound_view);
+        cardBackView = findViewById(R.id.card_back_view);
+        cardSetView = findViewById(R.id.card_set_view);
     }
 
     protected void updateUI() {
         musicView.setImageResource(playMusic ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
-        soundView.setImageResource(playMusic ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
+        soundView.setImageResource(playSound ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
+        cardBackView.setImageResource(R.drawable.card_back);
+        cardSetView.setImageResource(cardSet == 0 ? R.drawable.cat0 : R.drawable.amazon);
     }
 
     protected void setOnClickListeners() {
         musicView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (!playMusic) {
                     //doBindingShitForMusicAndWhatNotImTiredOfThis();
                     Log.i("SettingsActivity", "onClick: now it should start playing music again");
@@ -56,6 +59,17 @@ public class SettingsActivity extends BaseFullscreenActivity {
                     }
                 }
                 getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("playMusic", playMusic).apply();
+                updateUI();
+            }
+        });
+
+        cardSetView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cardSet++;
+                cardSet %= 2;
+                getSharedPreferences("settings",MODE_PRIVATE).edit().putInt("cardSet", cardSet).apply();
+                updateUI();
             }
         });
     }

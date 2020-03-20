@@ -39,8 +39,9 @@ public class GameActivity extends BaseFullscreenActivity {
     ArrayList<Integer> objectA;
 
     int n, m, numTries, oldPosition, turnPlayer, cardsLeft;
-    int [] boardStatus, catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
-    int durationFadeOut, durationComputerThink;
+    int [] boardStatus,
+            catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
+    int [] set_1_src = {R.drawable.air_rider,R.drawable.alley,R.drawable.amazon,R.drawable.ape,R.drawable.appetite,R.drawable.arch,R.drawable.aries,R.drawable.backwards_cowgirl,R.drawable.ball,R.drawable.barrier,R.drawable.bench,R.drawable.bent_cowgirl,R.drawable.bridge,R.drawable.chair,R.drawable.coffee_table,R.drawable.cowgirl,R.drawable.cowgirl_on_the_table,R.drawable.crab,R.drawable.crouching_tiger,R.drawable.downstroke,R.drawable.fantastic_elevator,R.drawable.froggy_style,R.drawable.italian_chandelier,R.drawable.knot,R.drawable.ladyboy,R.drawable.libido,R.drawable.nun,R.drawable.orgazm_generator,R.drawable.pokemon,R.drawable.precipice,R.drawable.princess,R.drawable.reverse_cowgirl,R.drawable.rider,R.drawable.rose,R.drawable.shameless,R.drawable.shuttle,R.drawable.sledge,R.drawable.soft_landing,R.drawable.spicy_dish,R.drawable.spider,R.drawable.sprout,R.drawable.starfish,R.drawable.straddle,R.drawable.swing,R.drawable.tiara,R.drawable.tug_of_war,R.drawable.vulgar_chair,};
     int[][] buckets;
 
     @Override
@@ -85,8 +86,6 @@ public class GameActivity extends BaseFullscreenActivity {
 
     protected void getAndSetData() {
         if (getIntent().hasExtra("state")) {
-            durationFadeOut = 1000;
-            durationComputerThink = 800;
             buckets = new int[9][5];
             for (int[] bucket : buckets) {
                 Arrays.fill(bucket, -1);
@@ -121,7 +120,13 @@ public class GameActivity extends BaseFullscreenActivity {
         Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
         Log.i(TAG, "turnCard: position to turn over: " + position);
         numTries++;
-        cards.get(position).setImageResource(catIDs[objectA.get(position)]);
+        if (cardSet == 0) {
+            cards.get(position).setImageResource(catIDs[objectA.get(position)]);
+        }
+        else {
+            cards.get(position).setImageResource(set_1_src[objectA.get(position)]);
+        }
+
         boardStatus[position] = VISIBLE;
         Log.i(TAG, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)));
         if (numTries == 1) {
