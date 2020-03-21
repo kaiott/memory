@@ -49,7 +49,7 @@ public class SettingsActivity extends BaseFullscreenActivity {
     protected void updateUI() {
         musicView.setImageResource(playMusic ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
         soundView.setImageResource(playSound ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
-        cardBackView.setImageResource(R.drawable.card_back);
+        cardBackView.setImageResource(CardSets.getCardBack(cardBack));
         cardSetView.setImageResource(CardSets.getSet(cardSet)[0]);
         darkThemeSwitch.setChecked(isDarkTheme);
         childFriendlySwitch.setChecked(isChildFriendlyVersion);
@@ -85,6 +85,16 @@ public class SettingsActivity extends BaseFullscreenActivity {
             public void onClick(View view) {
                 playSound = !playSound;
                 getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("playSound", playSound).apply();
+                updateUI();
+            }
+        });
+
+        cardBackView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cardBack++;
+                cardBack %= CardSets.getNumberOfBacks();
+                getSharedPreferences("settings",MODE_PRIVATE).edit().putInt("cardBack", cardBack).apply();
                 updateUI();
             }
         });
