@@ -1,7 +1,6 @@
 package com.example.memory;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,16 +8,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
-
-import java.util.Locale;
 
 public class SettingsActivity extends BaseFullscreenActivity {
 
     ImageView musicView, soundView, cardBackView, cardSetView;
     Switch darkThemeSwitch, childFriendlySwitch;
     Spinner languageSpinner;
+    SeekBar durationFadeSeekBar, durationComputerThinkSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +43,9 @@ public class SettingsActivity extends BaseFullscreenActivity {
         ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, themes);
         languageSpinner.setAdapter(mAdapter);
         languageSpinner.setSelection(language,false);
+
+        durationFadeSeekBar = findViewById(R.id.durationFadeSeekBar);
+        durationComputerThinkSeekBar = findViewById(R.id.durationCompThinkSeekBar);
     }
 
     protected void updateUI() {
@@ -53,6 +55,8 @@ public class SettingsActivity extends BaseFullscreenActivity {
         cardSetView.setImageResource(CardSets.getSet(cardSet)[0]);
         darkThemeSwitch.setChecked(isDarkTheme);
         childFriendlySwitch.setChecked(isChildFriendlyVersion);
+        durationFadeSeekBar.setProgress(durationFadeOut/200-2);
+        durationComputerThinkSeekBar.setProgress(durationComputerThink/200-2);
     }
 
     protected void setOnClickListenersETC() {
@@ -114,7 +118,10 @@ public class SettingsActivity extends BaseFullscreenActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isDarkTheme = b;
                 getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("isDarkTheme", isDarkTheme).apply();
-                recreate();
+                //instead of recreate
+                startActivity(getIntent());
+                finish();
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -136,8 +143,13 @@ public class SettingsActivity extends BaseFullscreenActivity {
                 if (language != position) {
                     language = position;
                     setLocale(language);
+                    getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("language", language).apply();
                     updateUI();
-                    recreate();
+
+                    //instead of recreate
+                    startActivity(getIntent());
+                    finish();
+                    overridePendingTransition(0, 0);
                 }
             }
 
@@ -146,6 +158,57 @@ public class SettingsActivity extends BaseFullscreenActivity {
             }
         });
 
+        durationFadeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                durationFadeOut = i*200 + 400;
+                getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("durationFadeOut", durationFadeOut).apply();
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        durationComputerThinkSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                durationComputerThink = i*200 + 400;
+                getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("durationComputerThink", durationComputerThink).apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    public void resetToDefault(View view) {
+        getSharedPreferences("settings", MODE_PRIVATE).edit().clear().commit();
+        //instead of recreate
+        startActivity(getIntent());
+        finish();
+        overridePendingTransition(0, 0);
+    }
+
+    public void saveAndReturn(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -154,7 +217,6 @@ public class SettingsActivity extends BaseFullscreenActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
-
     }
 
 }

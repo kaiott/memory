@@ -30,4 +30,6 @@
     <string name="settings_child_friendly_version">Versión para niños</string>
     <string name="turn">Turno:</string>
     <string name="points">Puntos</string>
+    <string name="settings_save">Guardar</string>
+    <string name="settings_reset_to_default">Resetear</string>
 </resources>

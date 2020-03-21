@@ -29,4 +29,6 @@
     <string name="settings_child_friendly_version">Child friendly version</string>
     <string name="turn">Turn:</string>
     <string name="points">Points</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_reset_to_default">Reset to default</string>
 </resources>

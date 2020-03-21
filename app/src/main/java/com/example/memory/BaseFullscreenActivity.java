@@ -19,11 +19,6 @@ import java.util.Locale;
 
 public abstract class BaseFullscreenActivity extends AppCompatActivity {
 
-    final static int DARK_THEME = 0;
-    final static int LIGHT_THEME = 1;
-    public int [] themes = {R.style.DarkAppTheme, R.style.LightAppTheme};
-    public static int theme;
-
     HomeWatcher mHomeWatcher;
     
     private static final String TAG = "BaseFullscreenActivity";
@@ -180,8 +175,6 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
         Configuration config = new Configuration();
         config.locale = locale;
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
-
-        getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("language", language).apply();
     }
 
     protected void updateTheme() {

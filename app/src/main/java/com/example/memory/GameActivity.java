@@ -136,7 +136,7 @@ public class GameActivity extends BaseFullscreenActivity {
         if (numTries == 2) {
             Log.i(TAG, "turnCard: second try");
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
-                if (playSound) {
+                if (soundPool != null && playSound) {
                     soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
                 }
 
@@ -149,7 +149,7 @@ public class GameActivity extends BaseFullscreenActivity {
                 
             }
             else {
-                if (playSound) {
+                if (soundPool != null && playSound) {
                     soundPool.play(soundFail, 1, 1, 0, 0, 1);
                 }
                 boardStatus[oldPosition] = TURNED;

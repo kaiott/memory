@@ -6,7 +6,7 @@ public class CardSets {
     static int[] set_1 = {R.drawable.bluttest2713182, R.drawable.handwaesche2713253, R.drawable.henne2713260, R.drawable.krankenhaus2713224, R.drawable.lunge2713243, R.drawable.menschen2713219, R.drawable.moskito2713259, R.drawable.mund2713244, R.drawable.ratte2713179, R.drawable.schlaeger2713262, R.drawable.schwein2713261, R.drawable.sex2713246, R.drawable.spritze2713235, R.drawable.tod2713258, R.drawable.virus2713175, R.drawable.virus2713189, R.drawable.virus2713196, R.drawable.virus2713245,};
     static int[] set_2 = {R.drawable.air_rider, R.drawable.amazon, R.drawable.aries, R.drawable.backwards_cowgirl, R.drawable.ball, R.drawable.bench, R.drawable.bent_cowgirl, R.drawable.bridge, R.drawable.cowgirl, R.drawable.crouching_tiger, R.drawable.downstroke, R.drawable.pokemon, R.drawable.precipice, R.drawable.princess, R.drawable.reverse_cowgirl, R.drawable.shuttle, R.drawable.sledge, R.drawable.soft_landing,};
 
-    static int[] back = {R.drawable.card_back, R.drawable.card_back1, R.drawable.card_back2, R.drawable.card_back3};
+    static int[] back = {R.drawable.card_back1, R.drawable.card_back2, R.drawable.card_back3};
 
     static int[][] sets = {set_0, set_1, set_2};
 
