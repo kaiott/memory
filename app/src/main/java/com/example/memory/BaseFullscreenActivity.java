@@ -30,11 +30,11 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
 
     // Default settings
     final static boolean playMusicDefault = true, playSoundDefault = true,
-            showAnimationDefault = false, isChildFriendlyVersionDefault = false,
+            isChildFriendlyVersionDefault = false,
             isDarkThemeDefault = true;
     final static int languageDefault = 0, cardBackDefault = 0, cardSetDefault = 0,
             durationFadeOutDefault = 1000, durationComputerThinkDefault = 800;
-    static boolean playMusic, playSound, showAnimation, isChildFriendlyVersion, isDarkTheme;
+    static boolean playMusic, playSound, isChildFriendlyVersion, isDarkTheme;
     static int language, cardBack, cardSet, durationFadeOut, durationComputerThink;
 
     @Override
@@ -90,7 +90,6 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
 
         playMusic = preferences.getBoolean("playMusic", playMusicDefault);
         playSound = preferences.getBoolean("playSound", playSoundDefault);
-        showAnimation= preferences.getBoolean("showAnimation", showAnimationDefault);
         isChildFriendlyVersion = preferences.getBoolean("isChildFriendlyVersion", isChildFriendlyVersionDefault);
         isDarkTheme = preferences.getBoolean("isDarkTheme", isDarkThemeDefault);
         updateTheme();

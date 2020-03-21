@@ -11,8 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="@+id/child_friendly_switch"
-        app:layout_constraintStart_toStartOf="@+id/animations_switch"
+        app:layout_constraintEnd_toEndOf="@+id/sound_view"
+        app:layout_constraintStart_toStartOf="@+id/sound_view"
         app:layout_constraintTop_toTopOf="@+id/textView3"
         app:srcCompat="@drawable/ic_volume_up_black_40dp" />
 
@@ -21,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/textView4"
-        app:layout_constraintEnd_toEndOf="@+id/child_friendly_switch"
-        app:layout_constraintStart_toStartOf="@+id/child_friendly_switch"
+        app:layout_constraintEnd_toEndOf="@+id/dark_theme_switch"
+        app:layout_constraintStart_toStartOf="@+id/dark_theme_switch"
         app:layout_constraintTop_toTopOf="@+id/textView4"
         app:srcCompat="@drawable/ic_volume_off_black_40dp" />
 
@@ -60,13 +60,6 @@
         app:layout_constraintStart_toStartOf="@+id/child_friendly_switch"
         app:layout_constraintTop_toTopOf="@+id/textView6" />
 
-    <Switch
-        android:id="@+id/animations_switch"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/textView12"
-        app:layout_constraintEnd_toEndOf="@+id/child_friendly_switch"
-        app:layout_constraintTop_toTopOf="@+id/textView12" />
 
     <Switch
         android:id="@+id/dark_theme_switch"
@@ -74,6 +67,7 @@
         android:layout_height="27dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView13"
         app:layout_constraintEnd_toEndOf="@+id/child_friendly_switch"
+        app:layout_constraintStart_toStartOf="@+id/child_friendly_switch"
         app:layout_constraintTop_toTopOf="@+id/textView13" />
 
     <Switch
@@ -179,15 +173,6 @@
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="@string/settings_animations"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
         android:id="@+id/textView13"
@@ -197,7 +182,7 @@
         android:layout_marginTop="@dimen/settings_vertical_distance"
         android:text="@string/settings_dark_theme"
         app:layout_constraintStart_toStartOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
         android:id="@+id/textView14"

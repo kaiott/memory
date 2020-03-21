@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.Guideline;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -43,6 +45,9 @@ public class GameActivity extends BaseFullscreenActivity {
             catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
     int [] set_1_src = {R.drawable.air_rider,R.drawable.amazon,R.drawable.aries,R.drawable.backwards_cowgirl,R.drawable.ball,R.drawable.bench,R.drawable.bent_cowgirl,R.drawable.bridge,R.drawable.cowgirl,R.drawable.crouching_tiger,R.drawable.downstroke,R.drawable.pokemon,R.drawable.precipice,R.drawable.princess,R.drawable.reverse_cowgirl,R.drawable.shuttle,R.drawable.sledge,R.drawable.soft_landing,};
     int [] set_2_src = {R.drawable.bluttest2713182,R.drawable.handwaesche2713253,R.drawable.henne2713260,R.drawable.krankenhaus2713224,R.drawable.lunge2713243,R.drawable.menschen2713219,R.drawable.moskito2713259,R.drawable.mund2713244,R.drawable.ratte2713179,R.drawable.schlaeger2713262,R.drawable.schwein2713261,R.drawable.sex2713246,R.drawable.spritze2713235,R.drawable.tod2713258,R.drawable.virus2713175,R.drawable.virus2713189,R.drawable.virus2713196,R.drawable.virus2713245,};
+
+    SoundPool soundPool;
+    int soundSuccess, soundFail;
 
     int[][] buckets;
     int [] set_image_sources;
@@ -135,6 +140,10 @@ public class GameActivity extends BaseFullscreenActivity {
         if (numTries == 2) {
             Log.i(TAG, "turnCard: second try");
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
+                if (playSound) {
+                    soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
+                }
+
                 addPoints();
                 cardsLeft -= 2;
                 boardStatus[oldPosition] = TAKEN;
@@ -144,6 +153,9 @@ public class GameActivity extends BaseFullscreenActivity {
                 
             }
             else {
+                if (playSound) {
+                    soundPool.play(soundFail, 1, 1, 0, 0, 1);
+                }
                 boardStatus[oldPosition] = TURNED;
                 boardStatus[position] = TURNED;
                 addToBucket(oldPosition);
@@ -187,11 +199,13 @@ public class GameActivity extends BaseFullscreenActivity {
 
         protected void onPostExecute(Object result) {
             if (objectA.get(pos1).equals(objectA.get(pos2))) {
+                //soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
                 cards.get(pos1).setVisibility(View.INVISIBLE);
                 cards.get(pos2).setVisibility(View.INVISIBLE);
                 nextTurn();
             }
             else {
+                //soundPool.play(soundFail, 1, 1, 0, 0, 1);
                 boardStatus[pos1] = COVERED;
                 boardStatus[pos2] = COVERED;
                 cards.get(pos1).setImageResource(R.drawable.card_back);
@@ -203,7 +217,7 @@ public class GameActivity extends BaseFullscreenActivity {
 
     private void addPoints() {
         players.get(turnPlayer).addPoint();
-        pointsBody.setText(""+players.get(turnPlayer).getPoints());
+        pointsBody.setText(String.valueOf(players.get(turnPlayer).getPoints()));
         updateOverview();
     }
 
@@ -400,6 +414,20 @@ public class GameActivity extends BaseFullscreenActivity {
 
         set_image_sources = CardSets.getSet(cardSet);
 
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(6)
+                .setAudioAttributes(audioAttributes)
+                .build();
+
+
+        soundSuccess = soundPool.load(this, R.raw.success, 1);
+        soundFail = soundPool.load(this, R.raw.fail3, 1);
+
         updateOverview();
         nextPlayer();
     }
@@ -441,4 +469,10 @@ public class GameActivity extends BaseFullscreenActivity {
         preferences.edit().putString("state", gson.toJson(state)).apply();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        soundPool.release();
+        soundPool = null;
+    }
 }

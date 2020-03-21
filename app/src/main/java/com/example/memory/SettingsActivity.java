@@ -17,7 +17,7 @@ import java.util.Locale;
 public class SettingsActivity extends BaseFullscreenActivity {
 
     ImageView musicView, soundView, cardBackView, cardSetView;
-    Switch animationsSwitch, darkThemeSwitch, childFriendlySwitch;
+    Switch darkThemeSwitch, childFriendlySwitch;
     Spinner languageSpinner;
 
     @Override
@@ -36,7 +36,6 @@ public class SettingsActivity extends BaseFullscreenActivity {
         cardBackView = findViewById(R.id.card_back_view);
         cardSetView = findViewById(R.id.card_set_view);
 
-        animationsSwitch = findViewById(R.id.animations_switch);
         darkThemeSwitch = findViewById(R.id.dark_theme_switch);
         childFriendlySwitch = findViewById(R.id.child_friendly_switch);
 
@@ -77,6 +76,15 @@ public class SettingsActivity extends BaseFullscreenActivity {
                     }
                 }
                 getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("playMusic", playMusic).apply();
+                updateUI();
+            }
+        });
+
+        soundView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playSound = !playSound;
+                getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("playSound", playSound).apply();
                 updateUI();
             }
         });
