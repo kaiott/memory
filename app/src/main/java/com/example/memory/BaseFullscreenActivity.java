@@ -8,13 +8,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.WindowManager;
 
+import java.util.Locale;
+
 public abstract class BaseFullscreenActivity extends AppCompatActivity {
+
+    final static int DARK_THEME = 0;
+    final static int LIGHT_THEME = 1;
+    public int [] themes = {R.style.DarkAppTheme, R.style.LightAppTheme};
+    public static int theme;
 
     HomeWatcher mHomeWatcher;
     
@@ -84,9 +92,11 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
         playSound = preferences.getBoolean("playSound", playSoundDefault);
         showAnimation= preferences.getBoolean("showAnimation", showAnimationDefault);
         isChildFriendlyVersion = preferences.getBoolean("isChildFriendlyVersion", isChildFriendlyVersionDefault);
-        isDarkTheme = preferences.getBoolean("isDarkTheme", isDarkTheme);
+        isDarkTheme = preferences.getBoolean("isDarkTheme", isDarkThemeDefault);
+        updateTheme();
 
         language = preferences.getInt("language", languageDefault);
+        setLocale(language);
         cardBack = preferences.getInt("cardBack", cardBackDefault);
         cardSet = preferences.getInt("cardSet", cardSetDefault);
         durationFadeOut = preferences.getInt("durationFadeOut", durationFadeOutDefault);
@@ -162,5 +172,25 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
         music.setClass(this,MusicService.class);
         stopService(music);
 
+    }
+
+    protected void setLocale(int language) {
+        String lang = language == 0 ? "en" : "es";
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+
+        getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("language", language).apply();
+    }
+
+    protected void updateTheme() {
+        if (isDarkTheme) {
+            setTheme(R.style.DarkAppTheme);
+        }
+        else  {
+            setTheme(R.style.LightAppTheme);
+        }
     }
 }

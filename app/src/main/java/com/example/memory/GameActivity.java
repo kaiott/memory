@@ -41,8 +41,11 @@ public class GameActivity extends BaseFullscreenActivity {
     int n, m, numTries, oldPosition, turnPlayer, cardsLeft;
     int [] boardStatus,
             catIDs = {R.drawable.cat0,R.drawable.cat1,R.drawable.cat2,R.drawable.cat3,R.drawable.cat4,R.drawable.cat5,R.drawable.cat6,R.drawable.cat7,R.drawable.cat8};
-    int [] set_1_src = {R.drawable.air_rider,R.drawable.alley,R.drawable.amazon,R.drawable.ape,R.drawable.appetite,R.drawable.arch,R.drawable.aries,R.drawable.backwards_cowgirl,R.drawable.ball,R.drawable.barrier,R.drawable.bench,R.drawable.bent_cowgirl,R.drawable.bridge,R.drawable.chair,R.drawable.coffee_table,R.drawable.cowgirl,R.drawable.cowgirl_on_the_table,R.drawable.crab,R.drawable.crouching_tiger,R.drawable.downstroke,R.drawable.fantastic_elevator,R.drawable.froggy_style,R.drawable.italian_chandelier,R.drawable.knot,R.drawable.ladyboy,R.drawable.libido,R.drawable.nun,R.drawable.orgazm_generator,R.drawable.pokemon,R.drawable.precipice,R.drawable.princess,R.drawable.reverse_cowgirl,R.drawable.rider,R.drawable.rose,R.drawable.shameless,R.drawable.shuttle,R.drawable.sledge,R.drawable.soft_landing,R.drawable.spicy_dish,R.drawable.spider,R.drawable.sprout,R.drawable.starfish,R.drawable.straddle,R.drawable.swing,R.drawable.tiara,R.drawable.tug_of_war,R.drawable.vulgar_chair,};
+    int [] set_1_src = {R.drawable.air_rider,R.drawable.amazon,R.drawable.aries,R.drawable.backwards_cowgirl,R.drawable.ball,R.drawable.bench,R.drawable.bent_cowgirl,R.drawable.bridge,R.drawable.cowgirl,R.drawable.crouching_tiger,R.drawable.downstroke,R.drawable.pokemon,R.drawable.precipice,R.drawable.princess,R.drawable.reverse_cowgirl,R.drawable.shuttle,R.drawable.sledge,R.drawable.soft_landing,};
+    int [] set_2_src = {R.drawable.bluttest2713182,R.drawable.handwaesche2713253,R.drawable.henne2713260,R.drawable.krankenhaus2713224,R.drawable.lunge2713243,R.drawable.menschen2713219,R.drawable.moskito2713259,R.drawable.mund2713244,R.drawable.ratte2713179,R.drawable.schlaeger2713262,R.drawable.schwein2713261,R.drawable.sex2713246,R.drawable.spritze2713235,R.drawable.tod2713258,R.drawable.virus2713175,R.drawable.virus2713189,R.drawable.virus2713196,R.drawable.virus2713245,};
+
     int[][] buckets;
+    int [] set_image_sources;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +89,7 @@ public class GameActivity extends BaseFullscreenActivity {
 
     protected void getAndSetData() {
         if (getIntent().hasExtra("state")) {
+            Log.i(TAG, "getAndSetData: carset size " + CardSets.getSetSize(cardSet));
             buckets = new int[9][5];
             for (int[] bucket : buckets) {
                 Arrays.fill(bucket, -1);
@@ -120,12 +124,7 @@ public class GameActivity extends BaseFullscreenActivity {
         Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
         Log.i(TAG, "turnCard: position to turn over: " + position);
         numTries++;
-        if (cardSet == 0) {
-            cards.get(position).setImageResource(catIDs[objectA.get(position)]);
-        }
-        else {
-            cards.get(position).setImageResource(set_1_src[objectA.get(position)]);
-        }
+        cards.get(position).setImageResource(set_image_sources[objectA.get(position)]);
 
         boardStatus[position] = VISIBLE;
         Log.i(TAG, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)));
@@ -223,9 +222,9 @@ public class GameActivity extends BaseFullscreenActivity {
     private void nextPlayer() {
         turnPlayer++;
         turnPlayer %= players.size();
-        playerBody.setText("Player " + players.get(turnPlayer).getNumber());
+        playerBody.setText(String.format(Locale.ENGLISH, "%s %d",getString(R.string.player),  players.get(turnPlayer).getNumber()));
         playerBody.setTextColor(players.get(turnPlayer).getColor());
-        pointsBody.setText(""+players.get(turnPlayer).getPoints());
+        pointsBody.setText(String.valueOf(players.get(turnPlayer).getPoints()));
         pointsBody.setTextColor(players.get(turnPlayer).getColor());
         updateOverview();
         nextTurn();
@@ -398,6 +397,8 @@ public class GameActivity extends BaseFullscreenActivity {
         playerBody = findViewById(R.id.player_body);
         pointsBody = findViewById(R.id.points_body);
         playerOverview = findViewById(R.id.player_overview);
+
+        set_image_sources = CardSets.getSet(cardSet);
 
         updateOverview();
         nextPlayer();

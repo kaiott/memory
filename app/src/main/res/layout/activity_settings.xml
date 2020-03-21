@@ -53,10 +53,11 @@
 
     <Spinner
         android:id="@+id/language_spinner"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/textView6"
         app:layout_constraintEnd_toEndOf="@+id/child_friendly_switch"
+        app:layout_constraintStart_toStartOf="@+id/child_friendly_switch"
         app:layout_constraintTop_toTopOf="@+id/textView6" />
 
     <Switch
@@ -90,8 +91,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="General"
-        android:textColor="@android:color/primary_text_dark"
+        android:text="@string/settings_general"
+        android:textColor="?attr/textColor"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -102,7 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Music"
+        android:text="@string/settings_music"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
@@ -112,7 +113,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Sound"
+        android:text="@string/settings_sound"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -122,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Language"
+        android:text="@string/settings_language"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
@@ -132,8 +133,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:text="Game"
-        android:textColor="@android:color/primary_text_dark"
+        android:text="@string/settings_game"
+        android:textColor="?attr/textColor"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/child_friendly_switch" />
@@ -144,7 +145,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Card Back Design"
+        android:text="@string/settings_card_back_design"
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
@@ -154,7 +155,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Card Set"
+        android:text="@string/settings_card_set"
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
@@ -164,7 +165,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Duration before cards turn"
+        android:text="@string/settings_duration_before_cards_turn"
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -174,7 +175,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Computer think time"
+        android:text="@string/settings_computer_think_time"
         app:layout_constraintStart_toStartOf="@+id/textView7"
         app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
@@ -184,7 +185,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Animations"
+        android:text="@string/settings_animations"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -194,7 +195,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Dark Theme"
+        android:text="@string/settings_dark_theme"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
@@ -204,7 +205,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="@dimen/settings_vertical_distance"
-        android:text="Child friendly version"
+        android:text="@string/settings_child_friendly_version"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 

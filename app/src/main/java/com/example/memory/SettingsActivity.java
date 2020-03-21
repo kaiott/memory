@@ -1,20 +1,24 @@
 package com.example.memory;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Switch;
+
+import java.util.Locale;
 
 public class SettingsActivity extends BaseFullscreenActivity {
 
     ImageView musicView, soundView, cardBackView, cardSetView;
     Switch animationsSwitch, darkThemeSwitch, childFriendlySwitch;
+    Spinner languageSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +27,7 @@ public class SettingsActivity extends BaseFullscreenActivity {
 
         defineViews();
         updateUI();
-        setOnClickListeners();
+        setOnClickListenersETC();
     }
 
     protected void defineViews() {
@@ -35,22 +39,28 @@ public class SettingsActivity extends BaseFullscreenActivity {
         animationsSwitch = findViewById(R.id.animations_switch);
         darkThemeSwitch = findViewById(R.id.dark_theme_switch);
         childFriendlySwitch = findViewById(R.id.child_friendly_switch);
+
+        languageSpinner = findViewById(R.id.language_spinner);
+        final String[] themes = {"English", "Español",};
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, themes);
+        languageSpinner.setAdapter(mAdapter);
+        languageSpinner.setSelection(language,false);
     }
 
     protected void updateUI() {
         musicView.setImageResource(playMusic ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
         soundView.setImageResource(playSound ? R.drawable.ic_volume_up_black_40dp : R.drawable.ic_volume_off_black_40dp);
         cardBackView.setImageResource(R.drawable.card_back);
-        cardSetView.setImageResource(cardSet == 0 ? R.drawable.cat0 : R.drawable.amazon);
+        cardSetView.setImageResource(CardSets.getSet(cardSet)[0]);
+        darkThemeSwitch.setChecked(isDarkTheme);
         childFriendlySwitch.setChecked(isChildFriendlyVersion);
     }
 
-    protected void setOnClickListeners() {
+    protected void setOnClickListenersETC() {
         musicView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!playMusic) {
-                    //doBindingShitForMusicAndWhatNotImTiredOfThis();
                     Log.i("SettingsActivity", "onClick: now it should start playing music again");
                     doBindService();
                     Intent music = new Intent();
@@ -75,9 +85,18 @@ public class SettingsActivity extends BaseFullscreenActivity {
             @Override
             public void onClick(View view) {
                 cardSet++;
-                cardSet %= isChildFriendlyVersion ? 1 : 2;
+                cardSet %= isChildFriendlyVersion ? CardSets.getNumberChildFriendlySets() : CardSets.getNumberOfSets();
                 getSharedPreferences("settings",MODE_PRIVATE).edit().putInt("cardSet", cardSet).apply();
                 updateUI();
+            }
+        });
+
+        darkThemeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isDarkTheme = b;
+                getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("isDarkTheme", isDarkTheme).apply();
+                recreate();
             }
         });
 
@@ -86,12 +105,29 @@ public class SettingsActivity extends BaseFullscreenActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isChildFriendlyVersion = b;
                 getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("isChildFriendlyVersion", isChildFriendlyVersion).apply();
-                if (isChildFriendlyVersion && cardSet > 0) {
+                if (isChildFriendlyVersion && cardSet >= CardSets.getNumberChildFriendlySets()) {
                     cardSet = 0;
                 }
                 updateUI();
             }
         });
+
+        languageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (language != position) {
+                    language = position;
+                    setLocale(language);
+                    updateUI();
+                    recreate();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
     }
 
     @Override
@@ -102,4 +138,5 @@ public class SettingsActivity extends BaseFullscreenActivity {
         finish();
 
     }
+
 }

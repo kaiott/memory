@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">memory</string>
+    <string name="new_game_button_text">Nuevo Partido</string>
+    <string name="continue_game_button_text">Continuar Partido</string>
+    <string name="settings_button_text">Opciones</string>
+    <string name="statistics_button_text">Estadísticas</string>
+    <string name="help_button_text">Ayuda</string>
+    <string name="credits_button_text">Créditos</string>
+    <string name="exit_game_button_text">Salir</string>
+    <string name="player">Jugador</string>
+    <string name="return_home_title">Volver?</string>
+    <string name="return_home_body">De verdad quieres volver? Puedes continuar luego</string>
+    <string name="return_home_cancel">Cancelar</string>
+    <string name="return_home_leave">Volver</string>
+    <string name="configure_game_play">Jugar</string>
+    <string name="configure_game_board_size">Tamaño:</string>
+    <string name="configure_game_random_player_order">Secuencia de jugadores al azar</string>
+    <string name="settings_general">General</string>
+    <string name="settings_music">Música</string>
+    <string name="settings_sound">Sonida</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_game">Juego</string>
+    <string name="settings_card_set">Cartas</string>
+    <string name="settings_duration_before_cards_turn">Duración antes de giro de cartas</string>
+    <string name="settings_card_back_design">Fondo de cartas</string>
+    <string name="settings_computer_think_time">Tiempo de pensamiento de AI</string>
+    <string name="settings_animations">Animaciones</string>
+    <string name="settings_dark_theme">Tema oscuro</string>
+    <string name="settings_child_friendly_version">Versión para niños</string>
+    <string name="turn">Turno:</string>
+    <string name="points">Puntos</string>
+</resources>

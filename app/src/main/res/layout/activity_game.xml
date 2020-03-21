@@ -565,7 +565,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Turn:"
+        android:text="@string/turn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -585,7 +585,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
         android:layout_marginTop="16dp"
-        android:text="Points"
+        android:text="@string/points"
         app:layout_constraintStart_toEndOf="@+id/player_body"
         app:layout_constraintTop_toTopOf="parent" />
 

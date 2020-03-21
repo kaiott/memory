@@ -9,7 +9,24 @@
     <string name="exit_game_button_text">Exit Game</string>
     <string name="player">Player</string>
     <string name="return_home_title">Return Home?</string>
-    <string name="return_home_body">\"Do you really want to leave? You can continue this game later in the Home screen with \'continue game\' \"</string>
+    <string name="return_home_body">Do you really want to leave? You can continue later</string>
     <string name="return_home_cancel">Cancel</string>
     <string name="return_home_leave">Leave</string>
+    <string name="configure_game_play">Play</string>
+    <string name="configure_game_board_size">Board size:</string>
+    <string name="configure_game_random_player_order">Random Player Order</string>
+    <string name="settings_general">General</string>
+    <string name="settings_music">Music</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_game">Game</string>
+    <string name="settings_card_set">Card Set</string>
+    <string name="settings_duration_before_cards_turn">Duration before cards turn</string>
+    <string name="settings_card_back_design">Card Back Design</string>
+    <string name="settings_computer_think_time">Computer think time</string>
+    <string name="settings_animations">Animations</string>
+    <string name="settings_dark_theme">Dark Theme</string>
+    <string name="settings_child_friendly_version">Child friendly version</string>
+    <string name="turn">Turn:</string>
+    <string name="points">Points</string>
 </resources>

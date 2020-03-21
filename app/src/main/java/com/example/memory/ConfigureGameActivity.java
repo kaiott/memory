@@ -46,8 +46,8 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
         final String[] themes = {"4x3", "4x4", "5x4", "6x4", "6x5", "6x6"};
         ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, themes);
         boardSize.setAdapter(mAdapter);
-        n = m = 6;
-        boardSize.setSelection(5,false);
+        n = 5; m = 4;
+        boardSize.setSelection(2,false);
         boardSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -98,9 +98,8 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
         ArrayList<Integer> objectA = new ArrayList<>(n*m);
         int[] status = new int[n*m];
         int turnPlayer = 0;
-        int repetitions = 4;
         for (int i = 0; i < n*m; i ++) {
-            objectA.add(i % (n*m/repetitions));
+            objectA.add(i % (9));
         }
         Collections.shuffle(objectA);
         if (randomOrderCheckBox.isChecked()) {
