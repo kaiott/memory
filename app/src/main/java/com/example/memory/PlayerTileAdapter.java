@@ -85,7 +85,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
         holder.playerText.setText(String.format(Locale.ENGLISH, "%s %d", context.getString(R.string.player), players.get(position).getNumber()));
 
         holder.playerTypeSpinner.setVisibility(View.INVISIBLE);
-        final String[] themes = {"Human", "AI Beginner", "AI Medium","AI GOD"};
+        final String[] themes = {context.getString(R.string.human), context.getString(R.string.ai_beginner), context.getString(R.string.ai_medium),context.getString(R.string.ai_god)};
         ArrayAdapter<String> mAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, themes);
         holder.playerTypeSpinner.setAdapter(mAdapter);
         holder.playerTypeSpinner.setSelection(players.get(position).getType(),false);
@@ -119,9 +119,12 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
                 holder.playerImage.setImageResource(R.drawable.ic_computer_black_24dp);
                 break;
             case Player.TYPE_COMP_MEDIUM:
+                Log.i(TAG, "setTypeIcon: medium");
+                holder.playerImage.setImageResource(R.drawable.ai2);
+                break;
             case Player.TYPE_COMP_GOD:
                 Log.i(TAG, "setTypeIcon: god");
-                holder.playerImage.setImageResource(R.drawable.ic_android_black_24dp);
+                holder.playerImage.setImageResource(R.drawable.ai3);
                 break;
         }
     }

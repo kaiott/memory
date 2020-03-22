@@ -18,13 +18,12 @@ public class MainActivity extends BaseFullscreenActivity {
 
     private static final String TAG = "MainActivity";
     private String previous_state;
-    private Button buttonContinueGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonContinueGame = findViewById(R.id.button_continue_game);
+        Button buttonContinueGame = findViewById(R.id.button_continue_game);
         SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
         previous_state = preferences.getString("state", null);
         if (previous_state == null) {
@@ -56,22 +55,15 @@ public class MainActivity extends BaseFullscreenActivity {
     }
 
     public void statisticsClicked(View view) {
+        Log.i(TAG, "statisticsClicked: ");
         Intent intent = new Intent(view.getContext(), StatisticsActivity.class);
         startActivity(intent);
-    }
-
-    public void helpClicked(android.view.View view) {
-        Toast.makeText(this,"Help clicked", Toast.LENGTH_SHORT).show();
     }
 
     public void settingsClicked(android.view.View view) {
         Log.i(TAG, "settingsClicked: ");
         Intent intent = new Intent(view.getContext(), SettingsActivity.class);
         startActivity(intent);
-    }
-
-    public void creditsClicked(android.view.View view) {
-        Toast.makeText(this,"Credits clicked", Toast.LENGTH_SHORT).show();
     }
 
     public void exitGameClicked(android.view.View view) {

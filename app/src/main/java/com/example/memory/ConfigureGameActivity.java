@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class ConfigureGameActivity extends BaseFullscreenActivity {
@@ -24,7 +23,6 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
     ImageView addPlayer;
     int n, m;
     CheckBox randomOrderCheckBox;
-    private int[] colors = {Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

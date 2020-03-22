@@ -13,6 +13,12 @@ import java.util.Arrays;
 
 public class Statistics implements Serializable {
 
+
+    /* Why non-static members except a static member of the very same class, and static function that
+    act on the static member statistics? Because we want all these values to be stored during serialization
+    so they cannot be static, but the logic calls for all of it to be static. Ugly fix, I know...
+     */
+
     static Statistics statistics;
 
     // single player stats

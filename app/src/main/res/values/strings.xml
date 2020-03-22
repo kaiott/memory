@@ -31,5 +31,15 @@
     <string name="points">Points</string>
     <string name="settings_save">Save</string>
     <string name="settings_reset_to_default">Reset to default</string>
-    <string name="turns_used">Turns used</string>
+    <string name="turns_used">Turns</string>
+    <string name="human">Human</string>
+    <string name="ai_beginner">AI Beginner</string>
+    <string name="ai_medium">AI Medium</string>
+    <string name="ai_god">AI GOD</string>
+    <string name="single_player">Single Player</string>
+    <string name="multi_player">Multi Player</string>
+    <string name="average_number_of_tries">Average number of turns</string>
+    <string name="least_number_of_tries">Least number of turns</string>
+    <string name="number_of_games_started">Number of games started</string>
+    <string name="number_of_games_finished">Number of games finished</string>
 </resources>

@@ -32,5 +32,15 @@
     <string name="points">Puntos</string>
     <string name="settings_save">Guardar</string>
     <string name="settings_reset_to_default">Resetear</string>
-    <string name="turns_used">Turnos usados:</string>
+    <string name="turns_used">Turnos</string>
+    <string name="human">Humano</string>
+    <string name="ai_beginner">AI Principante</string>
+    <string name="ai_medium">AI Intemedio</string>
+    <string name="ai_god">AI DIOS</string>
+    <string name="single_player">Modo individual</string>
+    <string name="multi_player">Modo multi-jugador</string>
+    <string name="average_number_of_tries">Número de turnos en promedio</string>
+    <string name="least_number_of_tries">Número de turnos más bajo</string>
+    <string name="number_of_games_started">Número de juegos empezados</string>
+    <string name="number_of_games_finished">Número de juegos terminados</string>
 </resources>

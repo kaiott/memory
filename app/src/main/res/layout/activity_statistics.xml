@@ -25,7 +25,7 @@
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="Single Player"
+            android:text="@string/single_player"
             android:textColor="?attr/textColor"
             android:textSize="18sp"/>
 
@@ -210,7 +210,7 @@
             app:layout_constraintTop_toBottomOf="@id/sp_element6"
             android:layout_marginStart="4dp"
             android:layout_marginTop="2dp"
-            android:text="least number of tries = 6"/>
+            android:text="@string/least_number_of_tries"/>
 
         <TextView
             android:id="@+id/sp_element62"
@@ -220,7 +220,7 @@
             app:layout_constraintTop_toBottomOf="@id/sp_element61"
             android:layout_marginStart="4dp"
             android:layout_marginTop="2dp"
-            android:text="average number of tries = 6"/>
+            android:text="@string/average_number_of_tries"/>
 
         <TextView
             android:id="@+id/mp_title"
@@ -228,7 +228,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="Multi Player"
+            android:text="@string/multi_player"
             android:textColor="?attr/textColor"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"

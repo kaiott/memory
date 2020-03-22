@@ -58,37 +58,50 @@ public class GameActivity extends BaseFullscreenActivity {
         initializeMembers();
     }
 
-    protected void addToBucket(int position) {
-        int bucketNumber = objectA.get(position);
-        int[] bucket = buckets[bucketNumber];
-        boolean found = false;
-        for (int i = 0; i < bucket.length-1; i++) {
-            if (bucket[i] == position) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            for (int i = 0; i < bucket.length-1; i++) {
-                if (bucket[i] == -1) {
-                    bucket[i] = position;
-                    bucket[bucket.length-1]++;
-                    break;
-                }
-            }
-        }
+    @Override
+    public void onBackPressed() {
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+        mBuilder.setTitle(R.string.return_home_title)
+                .setMessage(R.string.return_home_body)
+                .setNegativeButton(R.string.return_home_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setPositiveButton(R.string.return_home_leave, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (cardsLeft != 0) {
+                            saveGameState();
+                        }
+                        Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        mBuilder.create();
+        mBuilder.show();
     }
-    protected void removeFromBucket(int position) {
-        int bucketNumber = objectA.get(position);
-        int[] bucket = buckets[bucketNumber];
-        for (int i = 0; i < bucket.length-1; i++) {
-            if (bucket[i] == position) {
-                bucket[i] = -1;
-                bucket[bucket.length-1]--;
-                break;
-            }
-        }
+
+    protected void saveGameState() {
+        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus, totalNumberOfTurns);
+        GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
+        gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
+        Gson gson = gsonBilder.create();
+
+        SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
+        preferences.edit().putString("state", gson.toJson(state)).apply();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        soundPool.release();
+        soundPool = null;
+    }
+
 
     protected void getAndSetData() {
         if (getIntent().hasExtra("state")) {
@@ -121,273 +134,6 @@ public class GameActivity extends BaseFullscreenActivity {
         else {
             Log.i(TAG, "getAndSetData: No extra received, cannot create game");
             finish();
-        }
-    }
-
-    public void cardSelected(int position) {
-        if ((boardStatus[position] == COVERED || boardStatus[position] == TURNED) && numTries < 2 && players.get(turnPlayer).getType() == Player.TYPE_HUMAN) {
-            turnCard(position);
-        }
-    }
-
-    public void turnCard(int position) {
-        Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
-        Log.i(TAG, "turnCard: position to turn over: " + position);
-        numTries++;
-
-        /*the modulo applied in the case that you start a game with set that has a lot of cards,
-        go to settings, select fewer cards and continue, in any other case it does nothing*/
-        cards.get(position).setImageResource(set_image_sources[objectA.get(position) % set_image_sources.length]);
-
-        boardStatus[position] = VISIBLE;
-        Log.i(TAG, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)));
-        if (numTries == 1) {
-            Log.i(TAG, "turnCard: first try");
-            oldPosition = position;
-        }
-        if (numTries == 2) {
-            totalNumberOfTurns++;
-            Log.i(TAG, "turnCard: second try");
-            if (objectA.get(oldPosition).equals(objectA.get(position))) {
-                if (soundPool != null && playSound) {
-                    soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
-                }
-
-                addPoints();
-                cardsLeft -= 2;
-                boardStatus[oldPosition] = TAKEN;
-                boardStatus[position] = TAKEN;
-                removeFromBucket(oldPosition);
-                removeFromBucket(position);
-                
-            }
-            else {
-                if (soundPool != null && playSound) {
-                    soundPool.play(soundFail, 1, 1, 0, 0, 1);
-                }
-                boardStatus[oldPosition] = TURNED;
-                boardStatus[position] = TURNED;
-                addToBucket(oldPosition);
-                addToBucket(position);
-            }
-            Log.i(TAG, "turnCard: buckets: " + Arrays.deepToString(buckets));
-            new EndTurnTask().execute(oldPosition, position);
-        }
-    }
-
-    private class LetComputerDoTurn extends AsyncTask<String, Void, Integer> {
-        protected Integer doInBackground(String... args) {
-            Log.i(TAG, "doInBackground: computer turn started");
-            try {
-                Thread.sleep(durationComputerThink);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return players.get(turnPlayer).makeMove(boardStatus, buckets, oldPosition == -1 ? -1 : objectA.get(oldPosition));
-        }
-        protected void onPostExecute(Integer result) {
-            turnCard(result);
-            if (numTries < 2) {
-                new LetComputerDoTurn().execute();
-            }
-        }
-    }
-
-    private class EndTurnTask extends AsyncTask<Integer, Void, Object> {
-        int pos1, pos2;
-        protected Object doInBackground(Integer... args) {
-            pos1 = args[0];
-            pos2 = args[1];
-            try {
-                Thread.sleep(durationFadeOut);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
-
-        protected void onPostExecute(Object result) {
-            if (objectA.get(pos1).equals(objectA.get(pos2))) {
-                //soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
-                cards.get(pos1).setVisibility(View.INVISIBLE);
-                cards.get(pos2).setVisibility(View.INVISIBLE);
-                nextTurn();
-            }
-            else {
-                //soundPool.play(soundFail, 1, 1, 0, 0, 1);
-                boardStatus[pos1] = COVERED;
-                boardStatus[pos2] = COVERED;
-                cards.get(pos1).setImageResource(CardSets.getCardBack(cardBack));
-                cards.get(pos2).setImageResource(CardSets.getCardBack(cardBack));
-                nextPlayer();
-            }
-        }
-    }
-
-    private void addPoints() {
-        players.get(turnPlayer).addPoint();
-        pointsBody.setText(String.valueOf(players.get(turnPlayer).getPoints()));
-        updateOverview();
-    }
-
-    private void nextTurn() {
-        if (cardsLeft == 0) {
-            endGame();
-            return;
-        }
-        numTries = 0;
-        oldPosition = -1;
-        if (players.get(turnPlayer).getType() != Player.TYPE_HUMAN) {
-            new LetComputerDoTurn().execute();
-        }
-    }
-
-    private void nextPlayer() {
-        turnPlayer++;
-        turnPlayer %= players.size();
-        playerBody.setText(String.format(Locale.ENGLISH, "%s %d",getString(R.string.player),  players.get(turnPlayer).getNumber()));
-        playerBody.setTextColor(players.get(turnPlayer).getColor());
-        pointsBody.setText(String.valueOf(players.get(turnPlayer).getPoints()));
-        pointsBody.setTextColor(players.get(turnPlayer).getColor());
-        updateOverview();
-        nextTurn();
-    }
-
-    private void endGame() {
-        getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
-        makeEndGameAlert().show();
-        if (players.size() == 1) {
-            Statistics.addToStats(m, n, totalNumberOfTurns);
-        }
-        else {
-            Statistics.addFinishedGame();
-        }
-        Statistics.saveStatistics(GameActivity.this);
-    }
-
-    protected void updateOverview() {
-        if (players.size() > 1) {
-            findViewById(R.id.turns_used_header).setVisibility(View.INVISIBLE);
-            findViewById(R.id.turns_used_value).setVisibility(View.INVISIBLE);
-            SpannableString overview = new SpannableString("");
-            for (Player player : players) {
-                SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "%s %d:  %d\n", getString(R.string.player), player.getNumber(), player.getPoints()));
-                s.setSpan(new ForegroundColorSpan(player.getColor()), 0, s.length(), 0);
-                if (player == players.get(turnPlayer)) {
-                    s.setSpan(new StyleSpan(Typeface.BOLD), 0, s.length(), 0);
-                }
-                overview = new SpannableString(TextUtils.concat(overview, s));
-                playerOverview.setText(overview, TextView.BufferType.SPANNABLE);
-            }
-        }
-        else {
-            playerOverview.setVisibility(View.INVISIBLE);
-            ((TextView) findViewById(R.id.turns_used_header)).setText(R.string.turns_used);
-            ((TextView) findViewById(R.id.turns_used_value)).setText(String.valueOf(totalNumberOfTurns));
-        }
-    }
-
-
-    protected AlertDialog makeEndGameAlert() {
-        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-
-        LayoutInflater inflater = getLayoutInflater();
-        View view = inflater.inflate(R.layout.game_summary_dialog, null);
-        Collections.sort(players, Collections.<Player>reverseOrder());
-        TextView[] rankViews = {view.findViewById(R.id.rank_first_view), view.findViewById(R.id.rank_second_view), view.findViewById(R.id.rank_third_view),
-        view.findViewById(R.id.rank_forth_view), view.findViewById(R.id.rank_fifth_view), view.findViewById(R.id.rank_sixth_view)};
-        View[] ranks = {view.findViewById(R.id.rank_first), view.findViewById(R.id.rank_second), view.findViewById(R.id.rank_third),
-                view.findViewById(R.id.rank_forth), view.findViewById(R.id.rank_fifth), view.findViewById(R.id.rank_sixth)};
-        for (int i = 0; i < 6; i++) {
-            if (i < players.size()) {
-                rankViews[i].setText(String.format(Locale.ENGLISH, "%s %d: %d",  getString(R.string.player), players.get(i).getNumber(), players.get(i).getPoints()));
-            }
-            else {
-                ranks[i].setVisibility(View.GONE);
-                rankViews[i].setVisibility(View.GONE);
-            }
-        }
-        if (players.size() == 1) {
-            ranks[0].setVisibility(View.INVISIBLE);
-            rankViews[0].setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.turns_used) , totalNumberOfTurns));
-        }
-        mBuilder.setTitle("Game Summary")
-                .setView(view)
-                .setPositiveButton("Return Home", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                    }
-                })
-                .setNegativeButton("See Statistics", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(mBuilder.getContext(), StatisticsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-        return mBuilder.create();
-    }
-
-
-    private int row(int position) {
-        return position/m;
-    }
-    private int col(int position) {
-        return position % m;
-    }
-    private int position(int row, int column) { return m*row + column; }
-
-    public void distributeCards(int n, int m) {
-
-
-        for (ImageView card : cards) {
-            card.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cardSelected(cards.indexOf(view));
-                    //n = 11 - n;
-                    //changeCards(n);
-                }
-            });
-        }
-    }
-
-    public void makeGrid(int n, int m, ArrayList<ImageView> localCards) {
-        cards = new ArrayList<>();
-        Log.i(TAG, "makeGrid: setting grid to nxm = " + n +"x" +m);
-        for (int i = 0; i< verticalGuides.length; i++) {
-            verticalGuides[i].setGuidelinePercent((i + 1f )/m);
-        }
-
-        for (int localPos = 0; localPos < localCards.size(); localPos++) {
-            if (localPos / 6 < n && localPos % 6 < m) {
-                cards.add(localCards.get(localPos));
-                Log.i(TAG, "makeGrid: card added, position "+ localPos + " row: " + row(localPos) + " col: " + col(localPos));
-            }
-            else {
-                localCards.get(localPos).setVisibility(View.INVISIBLE);
-            }
-        }
-
-        for (int pos = 0; pos < cards.size(); pos++) {
-            if (boardStatus[pos] == TAKEN) {
-                cards.get(pos).setVisibility(View.INVISIBLE);
-            }
-        }
-        for (ImageView card : cards) {
-            card.setImageResource(CardSets.getCardBack(cardBack));
-            card.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    cardSelected(cards.indexOf(view));
-                }
-            });
         }
     }
 
@@ -462,47 +208,290 @@ public class GameActivity extends BaseFullscreenActivity {
         updateOverview();
     }
 
-    @Override
-    public void onBackPressed() {
-        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
-        mBuilder.setTitle(R.string.return_home_title)
-                .setMessage(R.string.return_home_body)
-                .setNegativeButton(R.string.return_home_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+    protected void makeGrid(int n, int m, ArrayList<ImageView> localCards) {
+        cards = new ArrayList<>();
+        Log.i(TAG, "makeGrid: setting grid to nxm = " + n +"x" +m);
+        for (int i = 0; i< verticalGuides.length; i++) {
+            verticalGuides[i].setGuidelinePercent((i + 1f )/m);
+        }
 
-                    }
-                })
-                .setPositiveButton(R.string.return_home_leave, new DialogInterface.OnClickListener() {
+        for (int localPos = 0; localPos < localCards.size(); localPos++) {
+            if (localPos / 6 < n && localPos % 6 < m) {
+                cards.add(localCards.get(localPos));
+                Log.i(TAG, "makeGrid: card added, position "+ localPos + " row: " + row(localPos) + " col: " + col(localPos));
+            }
+            else {
+                localCards.get(localPos).setVisibility(View.INVISIBLE);
+            }
+        }
+
+        for (int pos = 0; pos < cards.size(); pos++) {
+            if (boardStatus[pos] == TAKEN) {
+                cards.get(pos).setVisibility(View.INVISIBLE);
+            }
+        }
+        for (ImageView card : cards) {
+            card.setImageResource(CardSets.getCardBack(cardBack));
+            card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cardSelected(cards.indexOf(view));
+                }
+            });
+        }
+    }
+
+
+    protected void nextTurn() {
+        if (cardsLeft == 0) {
+            endGame();
+            return;
+        }
+        numTries = 0;
+        oldPosition = -1;
+        if (players.get(turnPlayer).getType() != Player.TYPE_HUMAN) {
+            new LetComputerDoTurn().execute();
+        }
+    }
+
+    protected void nextPlayer() {
+        turnPlayer++;
+        turnPlayer %= players.size();
+        playerBody.setText(String.format(Locale.ENGLISH, "%s %d",getString(R.string.player),  players.get(turnPlayer).getNumber()));
+        playerBody.setTextColor(players.get(turnPlayer).getColor());
+        pointsBody.setText(String.valueOf(players.get(turnPlayer).getPoints()));
+        pointsBody.setTextColor(players.get(turnPlayer).getColor());
+        updateOverview();
+        nextTurn();
+    }
+
+
+    protected void cardSelected(int position) {
+        if ((boardStatus[position] == COVERED || boardStatus[position] == TURNED) && numTries < 2 && players.get(turnPlayer).getType() == Player.TYPE_HUMAN) {
+            turnCard(position);
+        }
+    }
+
+    protected void turnCard(int position) {
+        Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
+        Log.i(TAG, "turnCard: position to turn over: " + position);
+        numTries++;
+
+        /*the modulo applied in the case that you start a game with set that has a lot of cards,
+        go to settings, select fewer cards and continue, in any other case it does nothing*/
+        cards.get(position).setImageResource(set_image_sources[objectA.get(position) % set_image_sources.length]);
+
+        boardStatus[position] = VISIBLE;
+        Log.i(TAG, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)));
+        if (numTries == 1) {
+            Log.i(TAG, "turnCard: first try");
+            oldPosition = position;
+        }
+        if (numTries == 2) {
+            totalNumberOfTurns++;
+            Log.i(TAG, "turnCard: second try");
+            if (objectA.get(oldPosition).equals(objectA.get(position))) {
+                if (soundPool != null && playSound) {
+                    soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
+                }
+
+                addPoints();
+                cardsLeft -= 2;
+                boardStatus[oldPosition] = TAKEN;
+                boardStatus[position] = TAKEN;
+                removeFromBucket(oldPosition);
+                removeFromBucket(position);
+
+            }
+            else {
+                if (soundPool != null && playSound) {
+                    soundPool.play(soundFail, 1, 1, 0, 0, 1);
+                }
+                boardStatus[oldPosition] = TURNED;
+                boardStatus[position] = TURNED;
+                addToBucket(oldPosition);
+                addToBucket(position);
+            }
+            Log.i(TAG, "turnCard: buckets: " + Arrays.deepToString(buckets));
+            new EndTurnTask().execute(oldPosition, position);
+        }
+    }
+
+    protected void addToBucket(int position) {
+        int bucketNumber = objectA.get(position);
+        int[] bucket = buckets[bucketNumber];
+        boolean found = false;
+        for (int i = 0; i < bucket.length-1; i++) {
+            if (bucket[i] == position) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            for (int i = 0; i < bucket.length-1; i++) {
+                if (bucket[i] == -1) {
+                    bucket[i] = position;
+                    bucket[bucket.length-1]++;
+                    break;
+                }
+            }
+        }
+    }
+
+    protected void removeFromBucket(int position) {
+        int bucketNumber = objectA.get(position);
+        int[] bucket = buckets[bucketNumber];
+        for (int i = 0; i < bucket.length-1; i++) {
+            if (bucket[i] == position) {
+                bucket[i] = -1;
+                bucket[bucket.length-1]--;
+                break;
+            }
+        }
+    }
+
+    protected void addPoints() {
+        players.get(turnPlayer).addPoint();
+        pointsBody.setText(String.valueOf(players.get(turnPlayer).getPoints()));
+        updateOverview();
+    }
+
+    protected void updateOverview() {
+        if (players.size() > 1) {
+            findViewById(R.id.turns_used_header).setVisibility(View.INVISIBLE);
+            findViewById(R.id.turns_used_value).setVisibility(View.INVISIBLE);
+            SpannableString overview = new SpannableString("");
+            for (Player player : players) {
+                SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "%s %d:  %d\n", getString(R.string.player), player.getNumber(), player.getPoints()));
+                s.setSpan(new ForegroundColorSpan(player.getColor()), 0, s.length(), 0);
+                if (player == players.get(turnPlayer)) {
+                    s.setSpan(new StyleSpan(Typeface.BOLD), 0, s.length(), 0);
+                }
+                overview = new SpannableString(TextUtils.concat(overview, s));
+                playerOverview.setText(overview, TextView.BufferType.SPANNABLE);
+            }
+        }
+        else {
+            playerOverview.setVisibility(View.INVISIBLE);
+            ((TextView) findViewById(R.id.turns_used_header)).setText(R.string.turns_used);
+            ((TextView) findViewById(R.id.turns_used_value)).setText(String.valueOf(totalNumberOfTurns));
+        }
+    }
+
+    protected class LetComputerDoTurn extends AsyncTask<String, Void, Integer> {
+        protected Integer doInBackground(String... args) {
+            Log.i(TAG, "doInBackground: computer turn started");
+            try {
+                Thread.sleep(durationComputerThink);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return players.get(turnPlayer).makeMove(boardStatus, buckets, oldPosition == -1 ? -1 : objectA.get(oldPosition));
+        }
+        protected void onPostExecute(Integer result) {
+            turnCard(result);
+            if (numTries < 2) {
+                new LetComputerDoTurn().execute();
+            }
+        }
+    }
+
+    protected class EndTurnTask extends AsyncTask<Integer, Void, Object> {
+        int pos1, pos2;
+        protected Object doInBackground(Integer... args) {
+            pos1 = args[0];
+            pos2 = args[1];
+            try {
+                Thread.sleep(durationFadeOut);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        protected void onPostExecute(Object result) {
+            if (objectA.get(pos1).equals(objectA.get(pos2))) {
+                //soundPool.play(soundSuccess, 1, 1, 0, 0, 1);
+                cards.get(pos1).setVisibility(View.INVISIBLE);
+                cards.get(pos2).setVisibility(View.INVISIBLE);
+                nextTurn();
+            }
+            else {
+                //soundPool.play(soundFail, 1, 1, 0, 0, 1);
+                boardStatus[pos1] = COVERED;
+                boardStatus[pos2] = COVERED;
+                cards.get(pos1).setImageResource(CardSets.getCardBack(cardBack));
+                cards.get(pos2).setImageResource(CardSets.getCardBack(cardBack));
+                nextPlayer();
+            }
+        }
+    }
+
+
+    protected void endGame() {
+        getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
+        makeEndGameAlert().show();
+        if (players.size() == 1) {
+            Statistics.addToStats(m, n, totalNumberOfTurns);
+        }
+        else {
+            Statistics.addFinishedGame();
+        }
+        Statistics.saveStatistics(GameActivity.this);
+    }
+
+    protected AlertDialog makeEndGameAlert() {
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(GameActivity.this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.game_summary_dialog, null);
+        Collections.sort(players, Collections.<Player>reverseOrder());
+        TextView[] rankViews = {view.findViewById(R.id.rank_first_view), view.findViewById(R.id.rank_second_view), view.findViewById(R.id.rank_third_view),
+        view.findViewById(R.id.rank_forth_view), view.findViewById(R.id.rank_fifth_view), view.findViewById(R.id.rank_sixth_view)};
+        View[] ranks = {view.findViewById(R.id.rank_first), view.findViewById(R.id.rank_second), view.findViewById(R.id.rank_third),
+                view.findViewById(R.id.rank_forth), view.findViewById(R.id.rank_fifth), view.findViewById(R.id.rank_sixth)};
+        for (int i = 0; i < 6; i++) {
+            if (i < players.size()) {
+                rankViews[i].setText(String.format(Locale.ENGLISH, "%s %d: %d",  getString(R.string.player), players.get(i).getNumber(), players.get(i).getPoints()));
+            }
+            else {
+                ranks[i].setVisibility(View.GONE);
+                rankViews[i].setVisibility(View.GONE);
+            }
+        }
+        if (players.size() == 1) {
+            ranks[0].setVisibility(View.INVISIBLE);
+            rankViews[0].setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.turns_used) , totalNumberOfTurns));
+        }
+        mBuilder.setTitle("Game Summary")
+                .setView(view)
+                .setPositiveButton("Return Home", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (cardsLeft != 0) {
-                            saveGameState();
-                        }
                         Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                     }
+                })
+                .setNegativeButton("See Statistics", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(mBuilder.getContext(), StatisticsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
                 });
-        mBuilder.create();
-        mBuilder.show();
+        return mBuilder.create();
     }
 
-    private void saveGameState() {
-        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus, totalNumberOfTurns);
-        GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
-        gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
-        Gson gson = gsonBilder.create();
 
-        SharedPreferences preferences = getSharedPreferences("game_states", MODE_PRIVATE);
-        preferences.edit().putString("state", gson.toJson(state)).apply();
+    protected int row(int position) {
+        return position/m;
+    }
+    protected int col(int position) {
+        return position % m;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        soundPool.release();
-        soundPool = null;
-    }
 }

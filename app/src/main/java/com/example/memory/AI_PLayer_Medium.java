@@ -8,6 +8,12 @@ public class AI_PLayer_Medium extends Player {
 
     @Override
     public int makeMove(final int[] status, final int [][] buckets, final int visible_id) {
+
+        // This player either makes a perfect move or random, not the best strategy for a medium player but whatever
+        if (Math.random() < 0.3) {
+            return super.makeRandomMove(status);
+        }
+
         // if no card is visible
         if (visible_id == -1) {
             // we check for all card_ids if in the corresponding bucket there are two or more positions known

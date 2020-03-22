@@ -11,6 +11,7 @@ import java.util.Locale;
 
 public class StatisticsActivity extends AppCompatActivity {
 
+    /*don't get me started on the rudimentary handling of this class*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,16 +27,16 @@ public class StatisticsActivity extends AppCompatActivity {
 
         for (int i = 0; i < singlePlayerViews.length; i++) {
             if (Statistics.getSPNumberGames()[i] != 0) {
-                singlePlayerViews[i][0].setText(String.format(Locale.ENGLISH,"Least number of turns: %d",Statistics.getSPLeastNumberTries()[i]));
-                singlePlayerViews[i][1].setText(String.format(Locale.ENGLISH,"Average number of turns: %.2f",Statistics.getSPTotalNumberTries()[i] * 1.0f / Statistics.getSPNumberGames()[i]));
+                singlePlayerViews[i][0].setText(String.format(Locale.ENGLISH,"%s: %d", getString(R.string.least_number_of_tries), Statistics.getSPLeastNumberTries()[i]));
+                singlePlayerViews[i][1].setText(String.format(Locale.ENGLISH,"%s: %.2f", getString(R.string.average_number_of_tries),Statistics.getSPTotalNumberTries()[i] * 1.0f / Statistics.getSPNumberGames()[i]));
             }
             else {
-                singlePlayerViews[i][0].setText(String.format(Locale.ENGLISH,"Least number of turns: -"));
-                singlePlayerViews[i][1].setText(String.format(Locale.ENGLISH,"Average number of turns: -"));
+                singlePlayerViews[i][0].setText(String.format(Locale.ENGLISH,"%s: -", getString(R.string.least_number_of_tries)));
+                singlePlayerViews[i][1].setText(String.format(Locale.ENGLISH,"%s: -", getString(R.string.average_number_of_tries)));
             }
         }
 
-        ((TextView) findViewById(R.id.mp_element1)).setText(String.format(Locale.ENGLISH, "Number of games started: %d", Statistics.getMPGamesStarted()));
-        ((TextView) findViewById(R.id.mp_element2)).setText(String.format(Locale.ENGLISH, "Number of games finished: %d", Statistics.getMPGamesFinished()));
+        ((TextView) findViewById(R.id.mp_element1)).setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.number_of_games_started), Statistics.getMPGamesStarted()));
+        ((TextView) findViewById(R.id.mp_element2)).setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.number_of_games_finished), Statistics.getMPGamesFinished()));
     }
 }
