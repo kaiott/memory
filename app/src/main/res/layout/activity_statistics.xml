@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="false"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fadeScrollbars="true"
+        android:isScrollContainer="true"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:scrollbars="vertical"
+        tools:context=".EventDetailsActivity">
+
+        <TextView
+            android:id="@+id/sp_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Single Player"
+            android:textColor="?attr/textColor"
+            android:textSize="18sp"/>
+
+
+        <TextView
+            android:id="@+id/sp_element1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="@dimen/settings_vertical_distance"
+            android:text="6x6"
+            android:textColor="?attr/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/sp_title"
+            app:layout_constraintTop_toBottomOf="@id/sp_title" />
+
+        <TextView
+            android:id="@+id/sp_element11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element1"
+            app:layout_constraintTop_toBottomOf="@id/sp_element1"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="least number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element1"
+            app:layout_constraintTop_toBottomOf="@id/sp_element11"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="average number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="@dimen/settings_vertical_distance"
+            android:text="6x5"
+            android:textColor="?attr/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/sp_title"
+            app:layout_constraintTop_toBottomOf="@id/sp_element12" />
+
+        <TextView
+            android:id="@+id/sp_element21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element2"
+            app:layout_constraintTop_toBottomOf="@id/sp_element2"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="least number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element2"
+            app:layout_constraintTop_toBottomOf="@id/sp_element21"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="average number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="@dimen/settings_vertical_distance"
+            android:text="6x4"
+            android:textColor="?attr/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/sp_title"
+            app:layout_constraintTop_toBottomOf="@id/sp_element22" />
+
+        <TextView
+            android:id="@+id/sp_element31"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element3"
+            app:layout_constraintTop_toBottomOf="@id/sp_element3"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="least number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element32"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element3"
+            app:layout_constraintTop_toBottomOf="@id/sp_element31"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="average number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="@dimen/settings_vertical_distance"
+            android:text="5x4"
+            android:textColor="?attr/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/sp_title"
+            app:layout_constraintTop_toBottomOf="@id/sp_element32" />
+
+        <TextView
+            android:id="@+id/sp_element41"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element4"
+            app:layout_constraintTop_toBottomOf="@id/sp_element4"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="least number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element42"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element4"
+            app:layout_constraintTop_toBottomOf="@id/sp_element41"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="average number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="@dimen/settings_vertical_distance"
+            android:text="4x4"
+            android:textColor="?attr/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/sp_title"
+            app:layout_constraintTop_toBottomOf="@id/sp_element42" />
+
+        <TextView
+            android:id="@+id/sp_element51"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element5"
+            app:layout_constraintTop_toBottomOf="@id/sp_element5"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="least number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element52"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element5"
+            app:layout_constraintTop_toBottomOf="@id/sp_element51"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="average number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="@dimen/settings_vertical_distance"
+            android:text="4x3"
+            android:textColor="?attr/textColor"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/sp_title"
+            app:layout_constraintTop_toBottomOf="@id/sp_element52" />
+
+        <TextView
+            android:id="@+id/sp_element61"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element6"
+            app:layout_constraintTop_toBottomOf="@id/sp_element6"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="least number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/sp_element62"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/sp_element6"
+            app:layout_constraintTop_toBottomOf="@id/sp_element61"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="2dp"
+            android:text="average number of tries = 6"/>
+
+        <TextView
+            android:id="@+id/mp_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Multi Player"
+            android:textColor="?attr/textColor"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sp_element62" />
+
+        <TextView
+            android:id="@+id/mp_element1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/mp_title"
+            app:layout_constraintTop_toBottomOf="@id/mp_title"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="12dp"
+            android:text="sdjkfsjdo"/>
+
+        <TextView
+            android:id="@+id/mp_element2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/mp_title"
+            app:layout_constraintTop_toBottomOf="@id/mp_element1"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="4dp"
+            android:text="sdjkfsjdo"/>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

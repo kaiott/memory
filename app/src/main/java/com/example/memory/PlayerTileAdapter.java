@@ -27,17 +27,12 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
 
     private static final String TAG = "PlayerTileAdapter";
 
-    private int[] colors = {Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA};
+    private int[] colors = {Color.RED, Color.GREEN, Color.CYAN, Color.MAGENTA, Color.YELLOW, Color.BLUE};
     ArrayList<Player> players;
     private Context context;
 
     public PlayerTileAdapter(Context ct, ArrayList<Player> players) {
         context = ct;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getColor() == -1) {
-                players.get(i).setColor(colors[i]);
-            }
-        }
         this.players = players;
     }
 
@@ -52,6 +47,7 @@ public class PlayerTileAdapter extends RecyclerView.Adapter<PlayerTileAdapter.Ev
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, final int position) {
         players.get(position).setNumber(position+1);
+        players.get(position).setColor(colors[position]);
 
         final EventViewHolder reference_copy = holder;
 

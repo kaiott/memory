@@ -132,6 +132,7 @@ public class SettingsActivity extends BaseFullscreenActivity {
                 getSharedPreferences("settings",MODE_PRIVATE).edit().putBoolean("isChildFriendlyVersion", isChildFriendlyVersion).apply();
                 if (isChildFriendlyVersion && cardSet >= CardSets.getNumberChildFriendlySets()) {
                     cardSet = 0;
+                    getSharedPreferences("settings", MODE_PRIVATE).edit().putInt("cardSet", cardSet).apply();
                 }
                 updateUI();
             }

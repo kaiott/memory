@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.Guideline;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +42,7 @@ public class GameActivity extends BaseFullscreenActivity {
     ArrayList<Player> players;
     ArrayList<Integer> objectA;
 
-    int n, m, numTries, oldPosition, turnPlayer, cardsLeft;
+    int n, m, numTries, oldPosition, turnPlayer, cardsLeft, totalNumberOfTurns;
     int [] boardStatus;
     SoundPool soundPool;
     int soundSuccess, soundFail;
@@ -90,15 +92,9 @@ public class GameActivity extends BaseFullscreenActivity {
 
     protected void getAndSetData() {
         if (getIntent().hasExtra("state")) {
-            Log.i(TAG, "getAndSetData: carset size " + CardSets.getSetSize(cardSet));
-            buckets = new int[9][5];
-            for (int[] bucket : buckets) {
-                Arrays.fill(bucket, -1);
-                bucket[bucket.length-1] = 0;
-            }
             Log.i(TAG, "getAndSetData: trying to set up game");
-            Serializable s = getIntent().getSerializableExtra("state");
-            GameState state = (GameState) s;
+            Serializable serializableExtra = getIntent().getSerializableExtra("state");
+            GameState state = (GameState) serializableExtra;
             assert state != null;
             Log.i(TAG, "getAndSetData: conversion correct");
             this.n = state.n;
@@ -108,6 +104,19 @@ public class GameActivity extends BaseFullscreenActivity {
             this.players = state.players;
             this.turnPlayer = state.turnPlayer-1; // -1 because in initialize we call nextPlayer() which increments the turn
             this.boardStatus = state.status;
+            this.totalNumberOfTurns = state.totalNumberOfTurns;
+            Log.i(TAG, "getAndSetData: cardset size " + CardSets.getSetSize(cardSet));
+            int numBuckets = Math.min(m*n/2, CardSets.getSetSize(cardSet));
+            int s = m*n / numBuckets;
+            if (s*numBuckets != m*n) {
+                s++;
+                s += s%2;
+            }
+            buckets = new int[numBuckets][s + 1];
+            for (int[] bucket : buckets) {
+                Arrays.fill(bucket, -1);
+                bucket[bucket.length-1] = 0;
+            }
         }
         else {
             Log.i(TAG, "getAndSetData: No extra received, cannot create game");
@@ -125,7 +134,10 @@ public class GameActivity extends BaseFullscreenActivity {
         Log.i(TAG, "turnCard: turning card by player of type " + players.get(turnPlayer).getType());
         Log.i(TAG, "turnCard: position to turn over: " + position);
         numTries++;
-        cards.get(position).setImageResource(set_image_sources[objectA.get(position)]);
+
+        /*the modulo applied in the case that you start a game with set that has a lot of cards,
+        go to settings, select fewer cards and continue, in any other case it does nothing*/
+        cards.get(position).setImageResource(set_image_sources[objectA.get(position) % set_image_sources.length]);
 
         boardStatus[position] = VISIBLE;
         Log.i(TAG, String.format(Locale.ENGLISH, "value %d discovered", objectA.get(position)));
@@ -134,6 +146,7 @@ public class GameActivity extends BaseFullscreenActivity {
             oldPosition = position;
         }
         if (numTries == 2) {
+            totalNumberOfTurns++;
             Log.i(TAG, "turnCard: second try");
             if (objectA.get(oldPosition).equals(objectA.get(position))) {
                 if (soundPool != null && playSound) {
@@ -242,19 +255,36 @@ public class GameActivity extends BaseFullscreenActivity {
 
     private void endGame() {
         getSharedPreferences("game_states", MODE_PRIVATE).edit().clear().apply();
-        // TODO: show results of match, winner, ranking etc
         makeEndGameAlert().show();
-        // TODO: Update statistics (either bare SharedPreferences or in statistics class)
+        if (players.size() == 1) {
+            Statistics.addToStats(m, n, totalNumberOfTurns);
+        }
+        else {
+            Statistics.addFinishedGame();
+        }
+        Statistics.saveStatistics(GameActivity.this);
     }
 
     protected void updateOverview() {
-        SpannableString overview = new SpannableString("");
-        for (Player player : players) {
-            SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "%s %d:  %d\n", getString(R.string.player), player.getNumber(), player.getPoints()));
-            s.setSpan(new ForegroundColorSpan(player.getColor()), 0, s.length(), 0);
-            overview = new SpannableString(TextUtils.concat(overview, s));
+        if (players.size() > 1) {
+            findViewById(R.id.turns_used_header).setVisibility(View.INVISIBLE);
+            findViewById(R.id.turns_used_value).setVisibility(View.INVISIBLE);
+            SpannableString overview = new SpannableString("");
+            for (Player player : players) {
+                SpannableString s = new SpannableString(String.format(Locale.ENGLISH, "%s %d:  %d\n", getString(R.string.player), player.getNumber(), player.getPoints()));
+                s.setSpan(new ForegroundColorSpan(player.getColor()), 0, s.length(), 0);
+                if (player == players.get(turnPlayer)) {
+                    s.setSpan(new StyleSpan(Typeface.BOLD), 0, s.length(), 0);
+                }
+                overview = new SpannableString(TextUtils.concat(overview, s));
+                playerOverview.setText(overview, TextView.BufferType.SPANNABLE);
+            }
         }
-        playerOverview.setText(overview, TextView.BufferType.SPANNABLE);
+        else {
+            playerOverview.setVisibility(View.INVISIBLE);
+            ((TextView) findViewById(R.id.turns_used_header)).setText(R.string.turns_used);
+            ((TextView) findViewById(R.id.turns_used_value)).setText(String.valueOf(totalNumberOfTurns));
+        }
     }
 
 
@@ -277,6 +307,10 @@ public class GameActivity extends BaseFullscreenActivity {
                 rankViews[i].setVisibility(View.GONE);
             }
         }
+        if (players.size() == 1) {
+            ranks[0].setVisibility(View.INVISIBLE);
+            rankViews[0].setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.turns_used) , totalNumberOfTurns));
+        }
         mBuilder.setTitle("Game Summary")
                 .setView(view)
                 .setPositiveButton("Return Home", new DialogInterface.OnClickListener() {
@@ -291,8 +325,7 @@ public class GameActivity extends BaseFullscreenActivity {
                 .setNegativeButton("See Statistics", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //TODO: one day point to statistics class
-                        Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
+                        Intent intent = new Intent(mBuilder.getContext(), StatisticsActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
@@ -425,8 +458,8 @@ public class GameActivity extends BaseFullscreenActivity {
         soundSuccess = soundPool.load(this, R.raw.success, 1);
         soundFail = soundPool.load(this, R.raw.fail3, 1);
 
-        updateOverview();
         nextPlayer();
+        updateOverview();
     }
 
     @Override
@@ -457,7 +490,7 @@ public class GameActivity extends BaseFullscreenActivity {
     }
 
     private void saveGameState() {
-        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus);
+        GameState state = new GameState(players, objectA, n, m, turnPlayer, cardsLeft, boardStatus, totalNumberOfTurns);
         GsonBuilder gsonBilder = new GsonBuilder().setPrettyPrinting();
         gsonBilder.registerTypeAdapter(Player.class, new PlayerAdapter());
         Gson gson = gsonBilder.create();

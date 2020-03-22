@@ -585,7 +585,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/points"
-        app:layout_constraintEnd_toStartOf="@+id/guidelineV5"
+        app:layout_constraintEnd_toStartOf="@+id/player_overview"
         app:layout_constraintStart_toEndOf="@+id/player_body"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -604,8 +604,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
         android:text="player2 1\n player3"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/turns_used_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/turns_used_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="#"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/turns_used_header"
+        app:layout_constraintTop_toBottomOf="@+id/turns_used_header" />
 </androidx.constraintlayout.widget.ConstraintLayout>

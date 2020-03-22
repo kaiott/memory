@@ -98,14 +98,22 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
         ArrayList<Integer> objectA = new ArrayList<>(n*m);
         int[] status = new int[n*m];
         int turnPlayer = 0;
-        for (int i = 0; i < n*m; i ++) {
-            objectA.add(i % (9));
+        int totalNumberOfTurns= 0;
+        int numBuckets = Math.min(m*n/2, CardSets.getSetSize(cardSet));
+        for (int i = 0; i < m*n/2; i ++) {
+            objectA.add(i%numBuckets);
+            objectA.add(i%numBuckets);
+            if (objectA.size() >= m*n) {
+                break;
+            }
         }
         Collections.shuffle(objectA);
         if (randomOrderCheckBox.isChecked()) {
             Collections.shuffle(players);
         }
-        GameState state = new GameState(players,objectA,n,m,turnPlayer,cardsLeft,status);
+        GameState state = new GameState(players,objectA,n,m,turnPlayer,cardsLeft,status,totalNumberOfTurns);
+        Statistics.addStartedGame();
+        Statistics.saveStatistics(ConfigureGameActivity.this);
         intent.putExtra("state", state);
         startActivity(intent);
     }

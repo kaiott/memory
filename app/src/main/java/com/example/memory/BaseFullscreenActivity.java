@@ -38,15 +38,14 @@ public abstract class BaseFullscreenActivity extends AppCompatActivity {
         //Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        //Intent intent = new Intent(this, BackgroundSoundService.class);
-        //startService(intent);
-
         getAndSetPreferences();
 
 
         if (playMusic) {
             doBindingShitForMusicAndWhatNotImTiredOfThis();
         }
+
+        Statistics.buildStatistics(BaseFullscreenActivity.this);
 
 
         //Start HomeWatcher
