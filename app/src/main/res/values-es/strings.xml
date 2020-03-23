@@ -43,4 +43,7 @@
     <string name="least_number_of_tries">Número de turnos más bajo</string>
     <string name="number_of_games_started">Número de juegos empezados</string>
     <string name="number_of_games_finished">Número de juegos terminados</string>
+    <string name="game_summary">Resumen de Juego</string>
+    <string name="return_home">Volver</string>
+    <string name="see_statistics">Ver estadísticas</string>
 </resources>

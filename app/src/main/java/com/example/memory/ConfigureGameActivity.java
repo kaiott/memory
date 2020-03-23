@@ -41,7 +41,7 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
         randomOrderCheckBox = findViewById(R.id.checkBox_random_order);
 
         Spinner boardSize = findViewById(R.id.spinner_board_size);
-        final String[] themes = {"4x3", "4x4", "5x4", "6x4", "6x5", "6x6"};
+        final String[] themes = {"4x3", "4x4", "5x4", "6x5", "6x6"};
         ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, themes);
         boardSize.setAdapter(mAdapter);
         n = 5; m = 4;
@@ -53,9 +53,8 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
                     case 0: n = 4; m = 3; break;
                     case 1: n = 4; m = 4; break;
                     case 2: n = 5; m = 4; break;
-                    case 3: n = 6; m = 4; break;
-                    case 4: n = 6; m = 5; break;
-                    case 5: n = 6; m = 6; break;
+                    case 3: n = 6; m = 5; break;
+                    case 4: n = 6; m = 6; break;
                 }
             }
 
@@ -110,8 +109,10 @@ public class ConfigureGameActivity extends BaseFullscreenActivity {
             Collections.shuffle(players);
         }
         GameState state = new GameState(players,objectA,n,m,turnPlayer,cardsLeft,status,totalNumberOfTurns);
-        Statistics.addStartedGame();
-        Statistics.saveStatistics(ConfigureGameActivity.this);
+        if (players.size() > 1) {
+            Statistics.addStartedGame();
+            Statistics.saveStatistics(ConfigureGameActivity.this);
+        }
         intent.putExtra("state", state);
         startActivity(intent);
     }

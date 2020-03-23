@@ -95,38 +95,6 @@
             android:text="average number of tries = 6"/>
 
         <TextView
-            android:id="@+id/sp_element3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginTop="@dimen/settings_vertical_distance"
-            android:text="6x4"
-            android:textColor="?attr/textColor"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/sp_title"
-            app:layout_constraintTop_toBottomOf="@id/sp_element22" />
-
-        <TextView
-            android:id="@+id/sp_element31"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/sp_element3"
-            app:layout_constraintTop_toBottomOf="@id/sp_element3"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="2dp"
-            android:text="least number of tries = 6"/>
-
-        <TextView
-            android:id="@+id/sp_element32"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/sp_element3"
-            app:layout_constraintTop_toBottomOf="@id/sp_element31"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="2dp"
-            android:text="average number of tries = 6"/>
-
-        <TextView
             android:id="@+id/sp_element4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -136,7 +104,7 @@
             android:textColor="?attr/textColor"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/sp_title"
-            app:layout_constraintTop_toBottomOf="@id/sp_element32" />
+            app:layout_constraintTop_toBottomOf="@id/sp_element22" />
 
         <TextView
             android:id="@+id/sp_element41"

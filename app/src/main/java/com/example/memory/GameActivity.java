@@ -463,9 +463,9 @@ public class GameActivity extends BaseFullscreenActivity {
             ranks[0].setVisibility(View.INVISIBLE);
             rankViews[0].setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.turns_used) , totalNumberOfTurns));
         }
-        mBuilder.setTitle("Game Summary")
+        mBuilder.setTitle(R.string.game_summary)
                 .setView(view)
-                .setPositiveButton("Return Home", new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.return_home, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent intent = new Intent(mBuilder.getContext(), MainActivity.class);
@@ -474,7 +474,7 @@ public class GameActivity extends BaseFullscreenActivity {
                         finish();
                     }
                 })
-                .setNegativeButton("See Statistics", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.see_statistics, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent intent = new Intent(mBuilder.getContext(), StatisticsActivity.class);

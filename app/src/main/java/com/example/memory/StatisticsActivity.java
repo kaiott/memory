@@ -2,6 +2,7 @@ package com.example.memory;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -20,7 +21,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
         TextView[][] singlePlayerViews =   {{findViewById(R.id.sp_element11), findViewById(R.id.sp_element12)},
                                             {findViewById(R.id.sp_element21), findViewById(R.id.sp_element22)},
-                                            {findViewById(R.id.sp_element31), findViewById(R.id.sp_element32)},
                                             {findViewById(R.id.sp_element41), findViewById(R.id.sp_element42)},
                                             {findViewById(R.id.sp_element51), findViewById(R.id.sp_element52)},
                                             {findViewById(R.id.sp_element61), findViewById(R.id.sp_element62)},};
@@ -38,5 +38,13 @@ public class StatisticsActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.mp_element1)).setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.number_of_games_started), Statistics.getMPGamesStarted()));
         ((TextView) findViewById(R.id.mp_element2)).setText(String.format(Locale.ENGLISH, "%s: %d", getString(R.string.number_of_games_finished), Statistics.getMPGamesFinished()));
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 }

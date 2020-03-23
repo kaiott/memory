@@ -31,10 +31,10 @@ public class Statistics implements Serializable {
     int gamesStarted;
 
     public Statistics() {
-        numberGames = new int[6];
-        leastNumberTries = new int[6];
+        numberGames = new int[5];
+        leastNumberTries = new int[5];
         Arrays.fill(leastNumberTries, Integer.MAX_VALUE);
-        totalNumberTries = new int[6];
+        totalNumberTries = new int[5];
 
         gamesFinished = 0;
         gamesStarted = 0;
@@ -57,10 +57,9 @@ public class Statistics implements Serializable {
         switch (m*n) {
             case 36: return 0;
             case 30: return 1;
-            case 24: return 2;
-            case 20: return 3;
-            case 16: return 4;
-            case 12: return 5;
+            case 20: return 2;
+            case 16: return 3;
+            case 12: return 4;
         }
         return 0;
     }
